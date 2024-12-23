@@ -31,7 +31,8 @@ export class FlightAdminLogGuard implements CanActivate {
     }
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: 'helloworld',
+        secret:
+          's>myRb69oSecretPnYP4Kv0_!_Q8NgPLH7KEY_0_/3gJQ9H+dUcN7965DlU++p',
       });
 
       request['user'] = payload;
