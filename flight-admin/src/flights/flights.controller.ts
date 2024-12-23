@@ -6,25 +6,29 @@ import {
   Put,
   Param,
   Delete,
-  Query,
   NotFoundException,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { FlightsService } from './flights.service';
 import { CreateFlightDto } from './dtos/create-flight.dto';
 import { ToggleAvailabilityDto } from './DTOs/toggle-availability.dto';
+import { FlightAdminLogGuard } from 'src/flight-admin-login/flight-admin-login.guard';
 
+@UseGuards(FlightAdminLogGuard)
 @Controller('flights')
 export class FlightsController {
   constructor(private readonly flightsService: FlightsService) {}
 
-  @Get('search')
-  async searchFlight(@Query('flightNumber') flightNumber: string) {
-    const flight = await this.flightsService.findByFlightNumber(flightNumber);
-    if (!flight) {
-      throw new NotFoundException('Invalid Flight Number!');
+  @Post('search')
+  async searchFlight(@Body('flightNumber') flightNumber: string) {
+    const flights = await this.flightsService.findByFlightNumber(flightNumber);
+    if (!flights || flights.length === 0) {
+      throw new NotFoundException(
+        'No flights found for the provided flight number',
+      );
     }
-    return flight;
+    return flights;
   }
 
   @Post()
@@ -51,7 +55,7 @@ export class FlightsController {
     return { message: 'Flights Data deleted successfully!' };
   }
 
-  @Patch(':id/toggle-availability') // Make sure this decorator is present
+  @Patch(':id/toggle-availability')
   async toggleAvailability(
     @Param('id') id: number,
     @Body() toggleAvailabilityDto: ToggleAvailabilityDto,

@@ -32,4 +32,5 @@ export class Flight {
     default: 'available',
   })
   availability: string;
+  length: number;
 }

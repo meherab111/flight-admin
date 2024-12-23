@@ -6,6 +6,7 @@ import { FALogin } from './Entities/admin-login.entity';
 
 @Injectable()
 export class FlightAdminLoginService {
+  private blacklistedTokens: Set<string> = new Set();
   constructor(
     @InjectRepository(CTable)
     private readonly cTableRepo: Repository<CTable>,
@@ -15,9 +16,8 @@ export class FlightAdminLoginService {
   ) {}
 
   async migrateData(): Promise<void> {
-    // Fetch data from CTable where ID starts with "FA-"
     const cTableData = await this.cTableRepo.find({
-      where: { ID: Like('FA-%') }, // Ensure this is the correct pattern
+      where: { ID: Like('FA-%') },
     });
 
     if (cTableData.length === 0) {
@@ -25,7 +25,6 @@ export class FlightAdminLoginService {
       return;
     }
 
-    // Ensure the ID is not null and is correctly mapped
     const loginData = cTableData.map((record) => {
       if (!record.ID) {
         console.log(`Missing ID for record: ${JSON.stringify(record)}`);
@@ -33,29 +32,35 @@ export class FlightAdminLoginService {
       }
 
       return {
-        ID: record.ID, // Ensure this is populated
+        ID: record.ID,
         username: record.username,
         email: record.email,
         password: record.password,
-        reset_token: null, // Set as null for now
+        reset_token: null,
       };
     });
 
-    // Insert into the HotelAdmin_LogIn table
     await this.loginRepo.save(loginData);
     console.log('Data migration completed.');
   }
 
-  // Method to validate login credentials
-  async validateLogin(username: string, password: string): Promise<boolean> {
+  async validateLogin(username: string, password: string): Promise<FALogin> {
     const user = await this.loginRepo.findOne({
       where: { username, password },
     });
-    return !!user; // Returns true if user is found, otherwise false
+    return user;
+  }
+
+  async logout(token: string): Promise<{ message: string }> {
+    this.blacklistedTokens.add(token);
+    return { message: 'Logged out successfully' };
+  }
+
+  async isTokenBlacklisted(token: string): Promise<boolean> {
+    return this.blacklistedTokens.has(token);
   }
 
   async updateEmail(id: string, newEmail: string): Promise<void> {
-    // 1. Update email in FALogin
     const adminLogin = await this.loginRepo.findOne({ where: { ID: id } });
     if (!adminLogin) {
       throw new NotFoundException(
@@ -66,7 +71,6 @@ export class FlightAdminLoginService {
     adminLogin.email = newEmail;
     await this.loginRepo.save(adminLogin);
 
-    // 2. Sync email in CTable
     const centralRecord = await this.cTableRepo.findOne({ where: { ID: id } });
     if (!centralRecord) {
       throw new NotFoundException(

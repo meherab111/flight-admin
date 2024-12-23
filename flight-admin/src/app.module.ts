@@ -16,11 +16,11 @@ import { FALogin } from './flight-admin-login/Entities/admin-login.entity';
       type: 'postgres',
       host: 'localhost',
       port: 9999,
-      username: 'postgres', // Your PostgreSQL username
-      password: '12345', // Your PostgreSQL password
-      database: 'myFlightDb', // Your database name
+      username: 'postgres',
+      password: '12345',
+      database: 'myFlightDb',
       entities: [Flight, CTable, FALogin],
-      synchronize: true, // Sync database schema (disable in production)
+      synchronize: true,
     }),
     FlightsModule,
     CentralTableModule,

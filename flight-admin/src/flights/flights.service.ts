@@ -22,11 +22,11 @@ export class FlightsService {
     return this.flightRepository.find();
   }
 
-  async findByFlightNumber(flightNumber: string): Promise<Flight | null> {
+  async findByFlightNumber(flightNumber: string): Promise<Flight[]> {
     return await this.flightRepository
       .createQueryBuilder('flight')
       .where('flight.flightNumber = :flightNumber', { flightNumber })
-      .getOne();
+      .getMany();
   }
 
   async updateFlight(

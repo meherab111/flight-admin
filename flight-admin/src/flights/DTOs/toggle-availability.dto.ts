@@ -10,7 +10,6 @@ export class ToggleAvailabilityDto {
   @IsEnum(AvailabilityStatus)
   @IsNotEmpty()
   @Transform(({ value }) => {
-    // Convert any input to lowercase
     return typeof value === 'string' ? value.toLowerCase() : value;
   })
   availability: AvailabilityStatus;

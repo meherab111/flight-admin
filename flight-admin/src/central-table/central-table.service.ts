@@ -52,7 +52,6 @@ export class CentralTableService {
     const newCTable = this.cTableRepo.create({ ...createCTableDto, ID });
     const savedCTable = await this.cTableRepo.save(newCTable);
 
-    // Automatically add to login table if user_type is 'Flight' and is_admin is true
     if (
       createCTableDto.user_type === 'Flight' &&
       createCTableDto.is_admin === true
@@ -64,17 +63,16 @@ export class CentralTableService {
   }
 
   private async addToLoginTable(ctable: CTable): Promise<void> {
-    // Ensure the required fields are present
     if (!ctable.username || !ctable.password || !ctable.email || !ctable.ID) {
       throw new Error('Missing required fields for login record');
     }
 
     const loginRecord = this.loginRepo.create({
-      ID: ctable.ID, // Use the same ID from CTable
+      ID: ctable.ID,
       username: ctable.username,
       password: ctable.password,
       email: ctable.email,
-      reset_token: null, // Set token to null or generate one if needed
+      reset_token: null,
     });
 
     await this.loginRepo.save(loginRecord);

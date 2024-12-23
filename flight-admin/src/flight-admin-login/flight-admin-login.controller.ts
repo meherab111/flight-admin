@@ -3,15 +3,20 @@ import {
   Controller,
   Patch,
   Post,
+  Req,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { FlightAdminLoginService } from './flight-admin-login.service';
 import { LoginDto } from './dtos/admin-login.dto';
+import { JwtService } from '@nestjs/jwt';
+import { FlightAdminLogGuard } from './flight-admin-login.guard';
 
 @Controller('flight-admin-login')
 export class FlightAdminLoginController {
   constructor(
     private readonly flightadminloginService: FlightAdminLoginService,
+    private readonly jwtService: JwtService,
   ) {}
 
   @Post('migrate')
@@ -26,18 +31,33 @@ export class FlightAdminLoginController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     const { username, password } = loginDto;
-    const isValid = await this.flightadminloginService.validateLogin(
+    const user = await this.flightadminloginService.validateLogin(
       username,
       password,
     );
 
-    if (!isValid) {
+    if (!user) {
       throw new UnauthorizedException('Invalid login credentials!');
     }
+    const payload = { sub: user.ID, username: user.username };
 
     return {
+      access_token: await this.jwtService.signAsync(payload),
       message: 'Successful Login!',
     };
+  }
+
+  @Post('logout')
+  @UseGuards(FlightAdminLogGuard)
+  logout(@Req() req: any): { message: string } {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      throw new UnauthorizedException('No token provided.');
+    }
+
+    FlightAdminLogGuard.blacklistToken(token);
+
+    return { message: 'Logged out successfully.' };
   }
 
   @Patch('update-email')

@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('Flight-Admin-Login')
 export class FALogin {
-  @PrimaryColumn() // Changed from PrimaryGeneratedColumn to PrimaryColumn
+  @PrimaryColumn()
   ID: string;
 
   @Column()
