@@ -7,3 +7,12 @@ export class LoginDto {
   @IsNotEmpty()
   password: string;
 }
+
+export class ForgotPasswordDto {
+  email: string;
+}
+
+export class ResetPasswordDto {
+  token: string;
+  newPassword: string;
+}

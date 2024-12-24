@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Flight } from './entities/flight.entity';
 import { CreateFlightDto } from './dtos/create-flight.dto';
 import { UpdateFlightDto } from './dtos/update-flight.dto';
@@ -43,6 +43,7 @@ export class FlightsService {
       throw new NotFoundException('Flight not found');
     }
   }
+
   async toggleAvailability(
     id: number,
     availability: AvailabilityStatus,
@@ -55,6 +56,7 @@ export class FlightsService {
     flight.availability = availability;
     return this.flightRepository.save(flight);
   }
+
   async getAvailabilityStatus(id: number): Promise<{ availability: string }> {
     const flight = await this.flightRepository.findOneBy({ id });
 
@@ -62,5 +64,20 @@ export class FlightsService {
       throw new NotFoundException(`Flight with ID ${id} is not found`);
     }
     return { availability: flight.availability };
+  }
+
+  async filterFlightsByPrice(
+    minPrice: number,
+    maxPrice: number,
+  ): Promise<any[]> {
+    const flights = await this.flightRepository.find({
+      where: {
+        ticketPrice: Between(minPrice, maxPrice),
+      },
+    });
+    if (!flights.length) {
+      throw new NotFoundException('No flights found in the given price range.');
+    }
+    return flights;
   }
 }

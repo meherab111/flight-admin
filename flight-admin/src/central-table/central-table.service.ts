@@ -72,7 +72,7 @@ export class CentralTableService {
       username: ctable.username,
       password: ctable.password,
       email: ctable.email,
-      reset_token: null,
+      resetToken: null,
     });
 
     await this.loginRepo.save(loginRecord);

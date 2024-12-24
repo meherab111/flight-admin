@@ -5,7 +5,7 @@ export class FALogin {
   @PrimaryColumn()
   ID: string;
 
-  @Column()
+  @Column({ unique: true })
   username: string;
 
   @Column()
@@ -15,5 +15,8 @@ export class FALogin {
   email: string;
 
   @Column({ nullable: true })
-  reset_token: string;
+  resetToken: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  resetTokenExpiry: Date;
 }

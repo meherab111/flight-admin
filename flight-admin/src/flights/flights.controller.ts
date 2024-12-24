@@ -9,6 +9,7 @@ import {
   NotFoundException,
   Patch,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { FlightsService } from './flights.service';
 import { CreateFlightDto } from './dtos/create-flight.dto';
@@ -29,6 +30,30 @@ export class FlightsController {
       );
     }
     return flights;
+  }
+
+  @Post('filter')
+  async filterFlights(@Body() body: { minPrice: number; maxPrice: number }) {
+    const { minPrice, maxPrice } = body;
+
+    if (minPrice === undefined || maxPrice === undefined) {
+      throw new BadRequestException(
+        'Please provide both minPrice and maxPrice.',
+      );
+    }
+
+    if (minPrice > maxPrice) {
+      throw new BadRequestException(
+        'minPrice cannot be greater then maxPrice.',
+      );
+    }
+
+    if (minPrice === maxPrice) {
+      throw new BadRequestException(
+        'minPrice and maxPrice cannot be the same.',
+      );
+    }
+    return await this.flightsService.filterFlightsByPrice(minPrice, maxPrice);
   }
 
   @Post()

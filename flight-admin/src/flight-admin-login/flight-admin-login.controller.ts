@@ -8,7 +8,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { FlightAdminLoginService } from './flight-admin-login.service';
-import { LoginDto } from './dtos/admin-login.dto';
+import {
+  ForgotPasswordDto,
+  LoginDto,
+  ResetPasswordDto,
+} from './dtos/admin-login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { FlightAdminLogGuard } from './flight-admin-login.guard';
 
@@ -66,5 +70,17 @@ export class FlightAdminLoginController {
     return {
       message: 'Email updated successfully !',
     };
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.flightadminloginService.forgotPassword(forgotPasswordDto);
+  }
+
+  @Post('reset-password')
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ): Promise<string> {
+    return this.flightadminloginService.resetPassword(resetPasswordDto);
   }
 }
