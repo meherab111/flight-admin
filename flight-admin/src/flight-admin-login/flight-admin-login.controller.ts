@@ -65,6 +65,7 @@ export class FlightAdminLoginController {
   }
 
   @Patch('update-email')
+  @UseGuards(FlightAdminLogGuard)
   async updateEmail(@Body('id') id: string, @Body('email') email: string) {
     await this.flightadminloginService.updateEmail(id, email);
     return {
