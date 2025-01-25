@@ -37,9 +37,9 @@ export default function ForgotPasswordPage() {
             <input
               type="email"
               placeholder="Email"
-              className="input input-bordered w-full"
+              className="input input-bordered w-full transition-all duration-300 ease-in-out transform hover:scale-105"
             />
-            <button className="btn btn-primary w-full">SUBMIT</button>
+            <button className="btn btn-primary w-full hover:bg-blue-700 animate__animated animate__zoomIn">SUBMIT</button>
           </form>
 
           {/* Back Button */}

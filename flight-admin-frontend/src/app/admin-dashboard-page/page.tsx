@@ -8,12 +8,14 @@ import PieChart from "../components/piechart-data";
 import TicketPriceRange from "../components/ticket-price-range";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPlane,
-  faCogs,
   faSignOutAlt,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import SearchBar from "../components/search-bar";
+
+import ManageFlight from "../components/manage-flight-form";
+import ToggleAvailability from "../components/toggle-availability";
+import AddFlightForm from "../components/add-flight-form";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -35,8 +37,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Search Bar */}
-          <SearchBar />
-
+        <SearchBar />
 
         {/* User Icon */}
         <div className="flex items-center">
@@ -54,42 +55,17 @@ export default function DashboardPage() {
         <div className="flex flex-col justify-between bg-blue-50 p-4">
           <div>
             {/* Sidebar Buttons */}
-            <button className="btn btn-primary w-full mt-4 mb-4 flex justify-between items-center">
-              <FontAwesomeIcon icon={faPlane} className="h-5 w-5 mr-2" />{" "}
-              {/* Airplane Icon */}
-              Add Flight
-              <FontAwesomeIcon
-                icon={faChevronRight}
-                className="h-5 w-5 ml-2"
-              />{" "}
-              {/* Chevron icon */}
-            </button>
 
-            <button className="btn btn-primary w-full mb-4 flex justify-between items-center">
-              <FontAwesomeIcon icon={faCogs} className="h-5 w-5 mr-2" />{" "}
-              {/* Settings Icon */}
-              Manage Flights
-              <FontAwesomeIcon
-                icon={faChevronRight}
-                className="h-5 w-5 ml-2"
-              />{" "}
-              {/* Chevron icon */}
-            </button>
+            <AddFlightForm />
+            
 
-            <button className="btn btn-primary w-full mb-4 flex justify-between items-center">
-              <FontAwesomeIcon icon={faCogs} className="h-5 w-5 mr-2" />{" "}
-              {/* Settings Icon */}
-              Toggle Availability
-              <FontAwesomeIcon
-                icon={faChevronRight}
-                className="h-5 w-5 ml-2"
-              />{" "}
-              {/* Chevron icon */}
-            </button>
+            <ManageFlight />
+
+            <ToggleAvailability />
           </div>
 
           {/* Logout Button */}
-          <button className="btn btn-error w-full mb-4 flex justify-between items-center">
+          <button className="btn btn-error w-full mb-4 flex justify-between items-center hover:bg-red-700">
             <FontAwesomeIcon icon={faSignOutAlt} className="h-5 w-5 mr-2" />{" "}
             {/* Logout Icon */}
             Logout
@@ -134,7 +110,6 @@ export default function DashboardPage() {
                 <TicketPriceRange />
                 {/* Ticket Price Range*/}
                 <WeatherCard city="Dhaka" />
-                
               </div>
 
               {/* Weather Component */}
