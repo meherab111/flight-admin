@@ -37,8 +37,8 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ city }) => {
   }, [city]);
 
   return (
-    <div className="bg-orange-100 text-center p-4 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold text-gray-600 mb-4">Weather</h2>
+    <div className="bg-rose-100 text-center p-4 rounded-lg shadow-md">
+      <h2 className="text-2xl font-semibold text-gray-700 mb-4">Weather</h2>
       {weather.temp !== null ? (
         <div className="flex justify-between mt-4">
           <div className="flex justify-content-center flex-col gap-4">
@@ -49,7 +49,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ city }) => {
             <RealTimeClock />
           </div>
 
-          <div className="bg-orange-100 text-center p-4 rounded-xl shadow-lg mr-20">
+          <div className="bg-rose-100 text-center p-4 rounded-full shadow-lg mr-20">
             <img
               src={weather.icon}
               alt="Weather Icon"

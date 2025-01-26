@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import { faChevronRight, faPlane, faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronRight,
+  faPlane,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -62,7 +66,6 @@ const AddFlightForm: React.FC = () => {
     toast.dismiss(); // Dismiss all active toast notifications
     setIsModalOpen(false); // Close the modal
   };
-  
 
   return (
     <div>

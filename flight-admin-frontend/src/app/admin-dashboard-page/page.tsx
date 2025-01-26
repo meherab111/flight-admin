@@ -4,18 +4,19 @@
 import WeatherCard from "../components/weather-card";
 
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import PieChart from "../components/piechart-data";
-import TicketPriceRange from "../components/ticket-price-range";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSignOutAlt,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import SearchBar from "../components/search-bar";
-
-import ManageFlight from "../components/manage-flight-form";
 import ToggleAvailability from "../components/toggle-availability";
 import AddFlightForm from "../components/add-flight-form";
+import FilterFlight from "../components/filter-flight";
+import PriceBarChart from "../components/ticket-price-range";
+import FlightStatistics from "../components/piechart-data";
+import ManageFlights from "../components/manage-flight-form";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -52,16 +53,17 @@ export default function DashboardPage() {
       {/* Main Content */}
       <div className="flex flex-1">
         {/* Sidebar */}
-        <div className="flex flex-col justify-between bg-blue-50 p-4">
+        <div className="flex flex-col justify-between bg-blue-100 p-4">
           <div>
             {/* Sidebar Buttons */}
 
             <AddFlightForm />
-            
 
-            <ManageFlight />
+            <ManageFlights />
 
             <ToggleAvailability />
+
+            <FilterFlight />
           </div>
 
           {/* Logout Button */}
@@ -78,42 +80,27 @@ export default function DashboardPage() {
         </div>
 
         {/* Dashboard Cards */}
-        <main className="flex-1 p-6 bg-white">
-          <h1 className="text-2xl font-bold text-gray-700 mb-6">
+        <main className="flex-1 p-4 bg-white">
+          <h1 className="text-2xl font-bold text-gray-700 mb-4">
             Flight Overview
           </h1>
-          <div className="flex flex-col gap-10">
-            {/* Cards */}
-            <div className="grid grid-cols-2 gap-6">
-              <div className="bg-blue-100 text-center p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-semibold text-gray-600">
-                  Total Flights
-                </h2>
-                <p className="text-4xl font-bold text-blue-600 mt-2">120</p>
-              </div>
-              <div className="bg-blue-100 text-center p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-semibold text-gray-600">
-                  Available Flights
-                </h2>
-                <p className="text-4xl font-bold text-blue-600 mt-2">30</p>
-              </div>
+
+          {/* Cards */}
+
+          {/* Weather and Pie Chart Section */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Pie Chart */}
+
+            <FlightStatistics />
+
+            <div className="grid grid-col gap-4">
+              {/* Weather Card */}
+              <PriceBarChart />
+              {/* Ticket Price Range*/}
+              <WeatherCard city="Dhaka" />
             </div>
 
-            {/* Weather and Pie Chart Section */}
-            <div className="grid grid-cols-2 gap-6">
-              {/* Pie Chart */}
-
-              <PieChart />
-
-              <div className="grid grid-col gap-6">
-                {/* Weather Card */}
-                <TicketPriceRange />
-                {/* Ticket Price Range*/}
-                <WeatherCard city="Dhaka" />
-              </div>
-
-              {/* Weather Component */}
-            </div>
+            {/* Weather Component */}
           </div>
         </main>
       </div>

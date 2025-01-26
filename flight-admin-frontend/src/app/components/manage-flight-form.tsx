@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlane, faChevronRight, faTimes, faTrash, faEdit } from "@fortawesome/free-solid-svg-icons"; // Added faTrash icon
+import {
+  faPlane,
+  faChevronRight,
+  faTimes,
+  faTrash,
+  faEdit,
+} from "@fortawesome/free-solid-svg-icons"; // Added faTrash icon
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 
 interface Flight {
   id: number;
@@ -13,7 +18,7 @@ interface Flight {
   arrivalCity: string;
   depDate: string;
   arrDate: string;
-  price: string;
+  price: number;
   availability: string;
 }
 
@@ -45,36 +50,75 @@ const ManageFlightsModal: React.FC<{
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 max-h-[80vh] overflow-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-blue-600">Manage Flight Details</h2>
-          <button onClick={onClose} className="text-red-600 font-bold text-2xl cursor-pointer">
+          <h2 className="text-2xl font-bold text-blue-600">
+            Manage Flight Details
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-red-600 font-bold text-2xl cursor-pointer"
+          >
             <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
         <table className="table-auto w-full border-collapse border border-gray-600">
           <thead>
             <tr className="bg-blue-100">
-              <th className="border border-gray-600 text-gray-700 px-4 py-2">Flight Number</th>
-              <th className="border border-gray-600 text-gray-700 px-4 py-2">Airline</th>
-              <th className="border border-gray-600 text-gray-700 px-4 py-2">Departure City</th>
-              <th className="border border-gray-600 text-gray-700 px-4 py-2">Arrival City</th>
-              <th className="border border-gray-600 text-gray-700 px-4 py-2">Dep Date</th>
-              <th className="border border-gray-600 text-gray-700 px-4 py-2">Arr Date</th>
-              <th className="border border-gray-600 text-gray-700 px-4 py-2">Price</th>
-              <th className="border border-gray-600 text-gray-700 px-4 py-2">Availability</th>
-              <th className="border border-gray-600 text-gray-700 px-4 py-2">Actions</th>
+              <th className="border border-gray-600 text-gray-700 px-4 py-2">
+                Flight Number
+              </th>
+              <th className="border border-gray-600 text-gray-700 px-4 py-2">
+                Airline
+              </th>
+              <th className="border border-gray-600 text-gray-700 px-4 py-2">
+                Departure City
+              </th>
+              <th className="border border-gray-600 text-gray-700 px-4 py-2">
+                Arrival City
+              </th>
+              <th className="border border-gray-600 text-gray-700 px-4 py-2">
+                Dep Date
+              </th>
+              <th className="border border-gray-600 text-gray-700 px-4 py-2">
+                Arr Date
+              </th>
+              <th className="border border-gray-600 text-gray-700 px-4 py-2">
+                Price
+              </th>
+              <th className="border border-gray-600 text-gray-700 px-4 py-2">
+                Availability
+              </th>
+              <th className="border border-gray-600 text-gray-700 px-4 py-2">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
             {flights.map((flight) => (
               <tr key={flight.id} className="hover:bg-gray-100">
-                <td className="border border-gray-600 text-gray-700 px-4 py-2">{flight.flightNumber}</td>
-                <td className="border border-gray-600 text-gray-700 px-4 py-2">{flight.airline}</td>
-                <td className="border border-gray-600 text-gray-700 px-4 py-2">{flight.departureCity}</td>
-                <td className="border border-gray-600 text-gray-700 px-4 py-2">{flight.arrivalCity}</td>
-                <td className="border border-gray-600 text-gray-700 px-4 py-2">{flight.depDate}</td>
-                <td className="border border-gray-600 text-gray-700 px-4 py-2">{flight.arrDate}</td>
-                <td className="border border-gray-600 text-gray-700 px-4 py-2">${flight.price}</td>
-                <td className="border border-gray-600 text-gray-700 px-4 py-2">{flight.availability}</td>
+                <td className="border border-gray-600 text-gray-700 px-4 py-2">
+                  {flight.flightNumber}
+                </td>
+                <td className="border border-gray-600 text-gray-700 px-4 py-2">
+                  {flight.airline}
+                </td>
+                <td className="border border-gray-600 text-gray-700 px-4 py-2">
+                  {flight.departureCity}
+                </td>
+                <td className="border border-gray-600 text-gray-700 px-4 py-2">
+                  {flight.arrivalCity}
+                </td>
+                <td className="border border-gray-600 text-gray-700 px-4 py-2">
+                  {flight.depDate}
+                </td>
+                <td className="border border-gray-600 text-gray-700 px-4 py-2">
+                  {flight.arrDate}
+                </td>
+                <td className="border border-gray-600 text-gray-700 px-4 py-2">
+                  ${flight.price}
+                </td>
+                <td className="border border-gray-600 text-gray-700 px-4 py-2">
+                  {flight.availability}
+                </td>
                 <td className="border border-gray-600 text-gray-700 px-4 py-2 space-x-2">
                   <button
                     onClick={() => setEditingFlight(flight)}
@@ -132,10 +176,16 @@ const ManageFlightsModal: React.FC<{
               </div>
             </div>
             <div className="flex justify-end mt-4 space-x-2">
-              <button onClick={() => setEditingFlight(null)} className="btn btn-secondary bg-red-500 hover:bg-red-700">
+              <button
+                onClick={() => setEditingFlight(null)}
+                className="btn btn-secondary bg-red-500 hover:bg-red-700"
+              >
                 Cancel
               </button>
-              <button onClick={saveChanges} className="btn btn-primary bg-green-500 border-0 hover:bg-green-700">
+              <button
+                onClick={saveChanges}
+                className="btn btn-primary bg-green-500 border-0 hover:bg-green-700"
+              >
                 Save
               </button>
             </div>
@@ -157,7 +207,7 @@ const ManageFlights: React.FC = () => {
       arrivalCity: "Los Angeles",
       depDate: "2025-01-30",
       arrDate: "2025-01-30",
-      price: "300",
+      price: 300,
       availability: "Available",
     },
     {
@@ -168,8 +218,19 @@ const ManageFlights: React.FC = () => {
       arrivalCity: "Paris",
       depDate: "2025-02-01",
       arrDate: "2025-02-01",
-      price: "200",
+      price: 200,
       availability: "Unavailable",
+    },
+    {
+      id: 3,
+      flightNumber: "NA456",
+      airline: "Nepal Airways",
+      departureCity: "Nepal",
+      arrivalCity: "Bangladesh",
+      depDate: "2025-03-12",
+      arrDate: "2025-03-14",
+      price: 180,
+      availability: "Available",
     },
   ]);
 

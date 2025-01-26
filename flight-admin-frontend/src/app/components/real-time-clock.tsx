@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 function RealTimeClock() {
   const [time, setTime] = useState(new Date());
@@ -11,11 +11,16 @@ function RealTimeClock() {
     return () => clearInterval(intervalId); // Clean up on component unmount
   }, []);
 
-  const formattedTime = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const formattedTime = time.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   return (
     <div>
-      <p className='text-lg text-gray-800 ml-20'>Current Time: {formattedTime}</p>
+      <p className="text-lg text-gray-800 ml-20">
+        Current Time: {formattedTime}
+      </p>
     </div>
   );
 }
