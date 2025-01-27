@@ -100,8 +100,7 @@ export class FlightAdminLoginService {
     const token = this.jwtService.sign(
       { id: user.ID, email: user.email },
       {
-        secret:
-          's>myRb69oSecretPnYP4Kv0_!_Q8NgPLH7KEY_0_/3gJQ9H+dUcN7965DlU++p',
+        secret: 's>myRb69oSecretPnYP4Kv0_!_Q8NgPLH7KEY_0_/3gJQ9H+dUcN7965DlU++p',
         expiresIn: '24h',
       },
     );
@@ -121,7 +120,7 @@ export class FlightAdminLoginService {
     const user = await this.loginRepo.findOne({ where: { resetToken: token } });
 
     if (!user || new Date(user.resetTokenExpiry) < new Date()) {
-      throw new BadRequestException('Invalid or expired reset token.');
+      throw new BadRequestException('Invalid or expired reset token. ololol');
     }
 
     user.password = newPassword;
@@ -143,6 +142,11 @@ export class FlightAdminLoginService {
 
     return 'Password reset successfully.';
   }
+  
+  async validateResetToken(token: string): Promise<{ isValid: boolean }> {
+    const user = await this.loginRepo.findOne({ where: { resetToken: token } });
+    return { isValid: !!user && new Date(user.resetTokenExpiry) > new Date() };
+  }
 
   private async sendResetEmail(email: string, token: string): Promise<void> {
     const transporter = nodemailer.createTransport({
@@ -153,18 +157,20 @@ export class FlightAdminLoginService {
       },
     });
 
-    const sentToken = token;
+    const resetLink = `http://localhost:3001/change-password-page?token=${token}`;
 
     const mailOptions = {
       from: 'nazibvai123@gmail.com',
       to: email,
       subject: 'Password Reset Request',
       html: `
-        <h2>Forgot Password ? Don't Worry.</h2>
-        <h3>This is the Token for Reset your Password: "<span style="color:green;">${sentToken}</span>"</h3>
-        <h3>---Thank you---</h3>
+        <h2>Forgot Password? Don't Worry.</h2>
+        <p>Click the link below to reset your password:</p>
+        <a href="${resetLink}" style="color:blue;">Reset Password</a>
+        <p>---Thank you---</p>
       `,
     };
+
     try {
       const info = await transporter.sendMail(mailOptions);
       console.log('Email sent: ' + info.response);

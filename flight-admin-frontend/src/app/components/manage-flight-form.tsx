@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -45,6 +46,7 @@ const ManageFlightsModal: React.FC<{
       toast.success("Flight Details Updated Successfully!");
     }
   };
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -247,6 +249,11 @@ const ManageFlights: React.FC = () => {
     toast.success("Flight Details Deleted Successfully!");
   };
 
+    const handleCloseModal = () => {
+      toast.dismiss(); // Dismiss all active toasts
+      setIsModalOpen(false); // Close the modal
+    };
+
   return (
     <>
       <button
@@ -261,7 +268,7 @@ const ManageFlights: React.FC = () => {
       {isModalOpen && (
         <ManageFlightsModal
           flights={flights}
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleCloseModal}
           onUpdate={handleUpdate}
           onDelete={handleDelete} // Added onDelete prop
         />

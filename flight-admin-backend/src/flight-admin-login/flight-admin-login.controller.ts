@@ -84,4 +84,9 @@ export class FlightAdminLoginController {
   ): Promise<string> {
     return this.flightadminloginService.resetPassword(resetPasswordDto);
   }
+
+  @Post('validate-reset-token')
+async validateResetToken(@Body('token') token: string): Promise<{ isValid: boolean }> {
+  return this.flightadminloginService.validateResetToken(token);
+}
 }

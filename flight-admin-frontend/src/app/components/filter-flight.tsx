@@ -46,7 +46,6 @@ const FilterFlight = () => {
       price: 180,
       availability: "Available",
     },
-    // Add more flights here if needed
   ];
 
   const filteredFlights = flights.filter((flight) => {
@@ -91,28 +90,36 @@ const FilterFlight = () => {
             {/* Price Range Inputs */}
             <div className="flex gap-4 mb-4">
               <input
-                type="number"
+                type="text"
                 value={minPrice}
-                onChange={(e) =>
-                  setMinPrice(
-                    e.target.value === ""
-                      ? ""
-                      : Math.max(0, parseInt(e.target.value))
-                  )
-                }
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (
+                    value === "" ||
+                    (/^\d+$/.test(value) && parseInt(value) <= 100000)
+                  ) {
+                    setMinPrice(
+                      value === "" ? "" : Math.max(0, parseInt(value))
+                    );
+                  }
+                }}
                 placeholder="Min Price"
                 className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
               <input
-                type="number"
+                type="text"
                 value={maxPrice}
-                onChange={(e) =>
-                  setMaxPrice(
-                    e.target.value === ""
-                      ? ""
-                      : Math.max(0, parseInt(e.target.value))
-                  )
-                }
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (
+                    value === "" ||
+                    (/^\d+$/.test(value) && parseInt(value) <= 100000)
+                  ) {
+                    setMaxPrice(
+                      value === "" ? "" : Math.max(0, parseInt(value))
+                    );
+                  }
+                }}
                 placeholder="Max Price"
                 className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
               />

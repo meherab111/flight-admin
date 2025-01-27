@@ -1,26 +1,44 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import WeatherCard from "../components/weather-card";
-
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-
+import { useRouter } from "next/navigation";
+import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSignOutAlt,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { faSignOutAlt, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import WeatherCard from "../components/weather-card";
 import SearchBar from "../components/search-bar";
 import ToggleAvailability from "../components/toggle-availability";
 import AddFlightForm from "../components/add-flight-form";
 import FilterFlight from "../components/filter-flight";
 import PriceBarChart from "../components/ticket-price-range";
-import FlightStatistics from "../components/piechart-data";
+import FlightStatistics from "../components/pie-chart-data";
 import ManageFlights from "../components/manage-flight-form";
+import AdminInfoPopup from "../components/admin-info";
+import addAuth from "../components/add-auth";
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+function DashboardPage() {
+  const router = useRouter();
 
-export default function DashboardPage() {
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+
+      await axios.post('http://localhost:3000/flight-admin-login/logout', {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      localStorage.removeItem('token');
+      router.push('/login-landing-page'); // Redirect to login page after logout
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <div className="h-screen flex flex-col">
       {/* Header */}
@@ -40,14 +58,7 @@ export default function DashboardPage() {
         {/* Search Bar */}
         <SearchBar />
 
-        {/* User Icon */}
-        <div className="flex items-center">
-          <img
-            src="/images/user-icon.png"
-            alt="User"
-            className="h-20 w-20 rounded-full m-2"
-          />
-        </div>
+        <AdminInfoPopup />
       </header>
 
       {/* Main Content */}
@@ -56,26 +67,23 @@ export default function DashboardPage() {
         <div className="flex flex-col justify-between bg-blue-100 p-4">
           <div>
             {/* Sidebar Buttons */}
-
             <AddFlightForm />
-
             <ManageFlights />
-
             <ToggleAvailability />
-
             <FilterFlight />
           </div>
 
           {/* Logout Button */}
-          <button className="btn btn-error w-full mb-4 flex justify-between items-center hover:bg-red-700">
+          <button
+            className="btn btn-error w-full mb-4 flex justify-between items-center hover:bg-red-700"
+            onClick={handleLogout}
+          >
             <FontAwesomeIcon icon={faSignOutAlt} className="h-5 w-5 mr-2" />{" "}
-            {/* Logout Icon */}
             Logout
             <FontAwesomeIcon
               icon={faChevronRight}
               className="h-5 w-5 ml-2"
             />{" "}
-            {/* Chevron icon */}
           </button>
         </div>
 
@@ -86,24 +94,19 @@ export default function DashboardPage() {
           </h1>
 
           {/* Cards */}
-
-          {/* Weather and Pie Chart Section */}
           <div className="grid grid-cols-2 gap-4">
             {/* Pie Chart */}
-
             <FlightStatistics />
-
             <div className="grid grid-col gap-4">
               {/* Weather Card */}
               <PriceBarChart />
-              {/* Ticket Price Range*/}
               <WeatherCard city="Dhaka" />
             </div>
-
-            {/* Weather Component */}
           </div>
         </main>
       </div>
     </div>
   );
 }
+
+export default addAuth(DashboardPage);

@@ -1,46 +1,75 @@
 /* eslint-disable @next/next/no-img-element */
+// pages/forgot-password.tsx
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
 
 export default function ForgotPasswordPage() {
-  const router = useRouter(); // Initialize useRouter
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      setMessage('Please enter your email.');
+      return;
+    }
+    setLoading(true);
+    try {
+      await axios.post('http://localhost:3000/flight-admin-login/forgot-password', { email });
+      toast.success('Password reset email sent. Please check your inbox.');
+    } catch (error) {
+      if(axios.isAxiosError(error)){
+        setMessage('Error sending password reset email. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="flex h-screen">
+    <><div className="flex h-screen">
       {/* Left side: Plane Image */}
       <div className="w-1/2 h-full">
         <img
           src="/images/plane_image_login_page.jpg"
           alt="Plane"
-          className="object-cover w-full h-full"
-        />
+          className="object-cover w-full h-full" />
       </div>
 
       {/* Right side: Forgot Password Form */}
       <div className="w-1/2 flex flex-col justify-center items-center bg-white opacity-95">
-      <div className="text-5xl absolute top-4 right-8 flex gap-4 p-4">
+        <div className="text-5xl absolute top-4 right-8 flex gap-4 p-4">
           <img
             src="/images/flying-airplane.png"
             alt="Building"
-            className="h-20"
-          />
+            className="h-20" />
         </div>
 
         <div className="w-3/4 max-w-md bg-blue-50 p-8 rounded-lg shadow-lg transform transition-all duration-500 ease-in-out animate__animated animate__fadeInUp">
           <h1 className="text-3xl font-semibold text-center text-blue-500 mb-2">
             Forgot Password?
           </h1>
-          <p className="text-center text-gray-600 mb-6">Give actual Email</p>
+          <p className="text-center text-gray-600 mb-6">Enter your email to receive a password reset link.</p>
 
-          <form className="space-y-6">
+          <form onSubmit={handleForgotPassword} className="space-y-6">
             <input
               type="email"
               placeholder="Email"
-              className="input input-bordered w-full transition-all duration-300 ease-in-out transform hover:scale-105"
-            />
-            <button className="btn btn-primary w-full hover:bg-blue-700 animate__animated animate__zoomIn">SUBMIT</button>
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="input input-bordered w-full transition-all duration-300 ease-in-out transform hover:scale-105" />
+            <button className="btn btn-primary w-full hover:bg-blue-700 animate__animated animate__zoomIn" disabled={loading}>
+              {loading ? 'Sending...' : 'SUBMIT'}
+            </button>
           </form>
+
+          {message && <p className="text-center text-gray-600 mt-4">{message}</p>}
 
           {/* Back Button */}
           <div className="mt-4 flex justify-center">
@@ -57,6 +86,6 @@ export default function ForgotPasswordPage() {
           <img src="/images/paper-plane.png" alt="Building" className="h-20" />
         </div>
       </div>
-    </div>
+    </div><ToastContainer /></>
   );
 }
