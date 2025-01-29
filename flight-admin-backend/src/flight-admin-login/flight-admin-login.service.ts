@@ -35,7 +35,7 @@ export class FlightAdminLoginService {
     const loginData = cTableData.map((record) => {
       if (!record.ID) {
         console.log(`Missing ID for record: ${JSON.stringify(record)}`);
-        throw new Error('ID is missing from the CTable record');
+        throw new Error('ID is missing from the Central Table record');
       }
 
       return {
@@ -70,9 +70,7 @@ export class FlightAdminLoginService {
   async updateEmail(id: string, newEmail: string): Promise<void> {
     const adminLogin = await this.loginRepo.findOne({ where: { ID: id } });
     if (!adminLogin) {
-      throw new NotFoundException(
-        'Admin with the given ID not found in Flight-Admin-Login',
-      );
+      throw new NotFoundException('Admin with the given ID is not found.');
     }
 
     adminLogin.email = newEmail;
@@ -80,13 +78,19 @@ export class FlightAdminLoginService {
 
     const centralRecord = await this.cTableRepo.findOne({ where: { ID: id } });
     if (!centralRecord) {
-      throw new NotFoundException(
-        'Record with the given ID not found in CTable',
-      );
+      throw new NotFoundException('Record with the given ID is not found.');
     }
 
     centralRecord.email = newEmail;
     await this.cTableRepo.save(centralRecord);
+  }
+
+  async getAdminInfo(id: string): Promise<FALogin> {
+    const admin = await this.loginRepo.findOne({ where: { ID: id } });
+    if (!admin) {
+      throw new NotFoundException('Admin not found.');
+    }
+    return admin;
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<string> {
@@ -133,14 +137,14 @@ export class FlightAdminLoginService {
     });
     if (!centralRecord) {
       throw new NotFoundException(
-        'Corresponding user not found in Central Table.',
+        'Corresponding user is not found.',
       );
     }
 
     centralRecord.password = newPassword;
     await this.cTableRepo.save(centralRecord);
 
-    return 'Password reset successfully.';
+    return 'Password Reset Successfully.';
   }
   
   async validateResetToken(token: string): Promise<{ isValid: boolean }> {

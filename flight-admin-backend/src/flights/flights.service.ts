@@ -22,6 +22,13 @@ export class FlightsService {
     return this.flightRepository.find();
   }
 
+  async getFlightStatistics() {
+    const totalFlights = await this.flightRepository.count();
+    const availableFlights = await this.flightRepository.count({ where: { availability: 'available' } });
+
+    return { totalFlights, availableFlights };
+  }
+
   async findByFlightNumber(flightNumber: string): Promise<Flight[]> {
     return await this.flightRepository
       .createQueryBuilder('flight')
@@ -36,6 +43,7 @@ export class FlightsService {
     await this.flightRepository.update(id, updateFlightDto);
     return this.flightRepository.findOneBy({ id });
   }
+
 
   async deleteFlight(id: number): Promise<void> {
     const result = await this.flightRepository.delete(id);

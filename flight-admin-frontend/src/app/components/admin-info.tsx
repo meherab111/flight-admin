@@ -1,38 +1,115 @@
 /* eslint-disable @next/next/no-img-element */
-"use client";
-
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 const AdminInfoPopup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [email, setEmail] = useState("admin@example.com"); // Default email
+  const [email, setEmail] = useState(""); // Default email
+  const [adminInfo, setAdminInfo] = useState({
+    username: "",
+    ID: "",
+    password: "",
+    email: "",
+  });
 
-  // Dummy admin data
-  const adminInfo = {
-    username: "admin_user",
-    id: "12345",
-    password: "admin_password",
-    email: email,
+  useEffect(() => {
+    const fetchAdminInfo = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("No access token found");
+        }
+
+        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        const adminId = decodedToken.sub;
+
+
+        const response = await axios.post(
+          "http://localhost:3000/flight-admin-login/admin-info",
+          { id: adminId },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+
+        setAdminInfo(response.data);
+        setEmail(response.data.email);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          toast.error('Error fetching admin info.');
+        } else {
+          toast.error('Error decoding token or fetching admin info.');
+        }
+      }
+    };
+
+    fetchAdminInfo();
+  }, []);
+
+  const handleEmailUpdate = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No access token found");
+      }
+
+      const decodedToken = JSON.parse(atob(token.split('.')[1]));
+      const adminId = decodedToken.sub;
+
+  
+      const response = await axios.patch(
+        "http://localhost:3000/flight-admin-login/update-email",
+        { id: adminId, email },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      console.log("Update Response:", response.data); // Debugging
+  
+      toast.success(`Email updated to: ${email}`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } catch (error) {
+      let errorMessage = "Error updating email. Please try again.";
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          errorMessage = error.response.data.message || errorMessage;
+        }
+      } else {
+        // Non-Axios error
+        console.error("Error:", error);
+      }
+  
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   };
 
   const handleEmailChange = (e: { target: { value: React.SetStateAction<string> } }) => {
     setEmail(e.target.value); // Update email state
-  };
-
-  const handleEmailUpdate = () => {
-    toast.success(`Email updated to: ${email}`, {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
   };
 
   const handleCloseModal = () => {
@@ -99,7 +176,7 @@ const AdminInfoPopup = () => {
                 <div>
                   <hr className="my-2" />
                   <p className="font-semibold bg-blue-200 text-center rounded-lg text-gray-700">
-                    {adminInfo.id}
+                    {adminInfo.ID}
                   </p>
                   <hr className="my-2" />
                 </div>

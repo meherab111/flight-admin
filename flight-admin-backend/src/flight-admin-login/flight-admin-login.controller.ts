@@ -1,8 +1,11 @@
 import {
   Body,
   Controller,
+  Get,
+  NotFoundException,
   Patch,
   Post,
+  Query,
   Req,
   UnauthorizedException,
   UseGuards,
@@ -15,17 +18,18 @@ import {
 } from './dtos/admin-login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { FlightAdminLogGuard } from './flight-admin-login.guard';
+import { FALogin } from './Entities/admin-login.entity';
 
 @Controller('flight-admin-login')
 export class FlightAdminLoginController {
   constructor(
-    private readonly flightadminloginService: FlightAdminLoginService,
+    private readonly flightAdminLoginService: FlightAdminLoginService,
     private readonly jwtService: JwtService,
   ) {}
 
   @Post('migrate')
   async migrate() {
-    await this.flightadminloginService.migrateData();
+    await this.flightAdminLoginService.migrateData();
     return {
       success: true,
       message: 'Data Migration Completed Successfully.',
@@ -35,7 +39,7 @@ export class FlightAdminLoginController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     const { username, password } = loginDto;
-    const user = await this.flightadminloginService.validateLogin(
+    const user = await this.flightAdminLoginService.validateLogin(
       username,
       password,
     );
@@ -66,27 +70,47 @@ export class FlightAdminLoginController {
 
   @Patch('update-email')
   @UseGuards(FlightAdminLogGuard)
-  async updateEmail(@Body('id') id: string, @Body('email') email: string) {
-    await this.flightadminloginService.updateEmail(id, email);
+  async updateEmail(@Body('id') id: string, @Body('email') email: string, @Req() req) {
+    if (req.user.sub !== id) {
+      throw new UnauthorizedException('You are not authorized to update this email.');
+    }
+
+    await this.flightAdminLoginService.updateEmail(id, email);
     return {
-      message: 'Email updated successfully !',
+      message: 'Email updated successfully!',
     };
+  }
+
+  @Post('admin-info')
+  @UseGuards(FlightAdminLogGuard)
+  async getAdminInfo(@Body('id') id: string, @Req() req): Promise<FALogin> {
+    if (req.user.sub !== id) {
+      throw new UnauthorizedException('You are not authorized to access this information.');
+    }
+
+    const admin = await this.flightAdminLoginService.getAdminInfo(id);
+    if (!admin) {
+      throw new NotFoundException('Admin not found.');
+    }
+    return admin;
   }
 
   @Post('forgot-password')
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    return this.flightadminloginService.forgotPassword(forgotPasswordDto);
+    return this.flightAdminLoginService.forgotPassword(forgotPasswordDto);
   }
 
   @Post('reset-password')
   async resetPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<string> {
-    return this.flightadminloginService.resetPassword(resetPasswordDto);
+    return this.flightAdminLoginService.resetPassword(resetPasswordDto);
   }
 
   @Post('validate-reset-token')
-async validateResetToken(@Body('token') token: string): Promise<{ isValid: boolean }> {
-  return this.flightadminloginService.validateResetToken(token);
-}
+  async validateResetToken(
+    @Body('token') token: string,
+  ): Promise<{ isValid: boolean }> {
+    return this.flightAdminLoginService.validateResetToken(token);
+  }
 }

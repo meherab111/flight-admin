@@ -1,13 +1,39 @@
 "use client";
+import { useState, useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import axios from "axios";
 
 // Register necessary components for the Doughnut chart
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function FlightStatistics() {
-  const totalFlights = 120;
-  const availableFlights = 30;
+  const [totalFlights, setTotalFlights] = useState(0);
+  const [availableFlights, setAvailableFlights] = useState(0);
+
+  useEffect(() => {
+    const fetchFlightStatistics = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("No access token found");
+        }
+
+        const response = await axios.get("http://localhost:3000/flights/statistics", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setTotalFlights(response.data.totalFlights);
+        setAvailableFlights(response.data.availableFlights);
+      } catch (error) {
+        console.error("Error fetching flight statistics:", error);
+      }
+    };
+
+    fetchFlightStatistics();
+  }, []);
 
   // Data for the Doughnut chart
   const chartData = {

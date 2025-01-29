@@ -10,11 +10,13 @@ import {
   Patch,
   UseGuards,
   BadRequestException,
+  Req,
 } from '@nestjs/common';
 import { FlightsService } from './flights.service';
 import { CreateFlightDto } from './dtos/create-flight.dto';
 import { ToggleAvailabilityDto } from './DTOs/toggle-availability.dto';
 import { FlightAdminLogGuard } from 'src/flight-admin-login/flight-admin-login.guard';
+import { UpdateFlightDto } from './dtos/update-flight.dto';
 
 @UseGuards(FlightAdminLogGuard)
 @Controller('flights')
@@ -66,12 +68,17 @@ export class FlightsController {
     return this.flightsService.getAllFlights();
   }
 
+  @Get('statistics')
+  async getFlightStatistics(@Req() req) {
+    return this.flightsService.getFlightStatistics();
+  }
+
   @Put(':id')
-  updateFlight(
+  async updateFlight(
     @Param('id') id: number,
-    @Body() toggleAvailabilityDto: ToggleAvailabilityDto,
+    @Body() updateFlightDto: UpdateFlightDto,
   ) {
-    return this.flightsService.updateFlight(id, toggleAvailabilityDto);
+    return this.flightsService.updateFlight(id, updateFlightDto);
   }
 
   @Delete(':id')
