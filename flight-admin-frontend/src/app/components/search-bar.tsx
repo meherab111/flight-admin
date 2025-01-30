@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState } from "react";
+import axios from "axios";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -8,9 +11,9 @@ interface FlightData {
   airline: string;
   departureCity: string;
   arrivalCity: string;
-  depDate: string;
-  arrDate: string;
-  price: string;
+  departureDate: string;
+  arrivalDate: string;
+  ticketPrice: string;
   availability: string;
 }
 
@@ -24,64 +27,35 @@ export default function SearchBar() {
   // State for flight details in the modal
   const [modalData, setModalData] = useState<FlightData[]>([]);
 
-  // Dummy flight data
-  const dummyFlights: FlightData[] = [
-    {
-      flightNumber: "FLY123",
-      airline: "Delta Airlines",
-      departureCity: "New York",
-      arrivalCity: "London",
-      depDate: "2024-12-20",
-      arrDate: "2024-12-25",
-      price: "600",
-      availability: "Available",
-    },
-    {
-      flightNumber: "FLY456",
-      airline: "American Airlines",
-      departureCity: "Chicago",
-      arrivalCity: "Paris",
-      depDate: "2024-12-22",
-      arrDate: "2024-12-28",
-      price: "850",
-      availability: "Available",
-    },
-    {
-      flightNumber: "FLY456",
-      airline: "American Airlines 2.0",
-      departureCity: "Chicago 2.0",
-      arrivalCity: "Paris 2.0",
-      depDate: "2024-12-22",
-      arrDate: "2024-12-28",
-      price: "850",
-      availability: "Available",
-    },
-    {
-      flightNumber: "FLY456",
-      airline: "American Airlines 3.0",
-      departureCity: "Chicago 3.0",
-      arrivalCity: "Paris 3.0",
-      depDate: "2024-12-22",
-      arrDate: "2024-12-28",
-      price: "950",
-      availability: "Available",
-    },
-    // Add more dummy flights as needed
-  ];
-
   // Handle search functionality
-  const handleSearch = () => {
-    const flights = dummyFlights.filter(
-      (f) => f.flightNumber === searchTerm.toUpperCase()
-    );
+  const handleSearch = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please log in to search for flights.");
+      return;
+    }
 
-    if (flights.length > 0) {
-      setModalData(flights); // Set flight details in the modal
-      setShowModal(true); // Show the modal
-      setSearchTerm("");
-    } else {
-      alert("Flight Details Not Found!");
-      setSearchTerm("");
+    try {
+      const response = await axios.post("http://localhost:3000/flights/search", {
+        flightNumber: searchTerm.toUpperCase()
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const flights = response.data;
+
+      if (flights.length > 0) {
+        setModalData(flights); // Set flight details in the modal
+        setShowModal(true); // Show the modal
+        setSearchTerm("");
+      } else {
+        alert("Flight Details Not Found!");
+        setSearchTerm("");
+      }
+    } catch {
+      alert("An error occurred while fetching flight data.");
     }
   };
 
@@ -125,6 +99,7 @@ export default function SearchBar() {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-8 rounded-lg w-1/2 md:w-1/3 max-h-[80vh] overflow-y-auto shadow-lg">
+          
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-blue-600">
                 Searched Flight Details
@@ -179,15 +154,15 @@ export default function SearchBar() {
                     </p>
                     <hr className="my-2" />
                     <p className="font-semibold bg-blue-200 text-center rounded-lg text-gray-700">
-                      {flight.depDate}
+                    {new Date(flight.departureDate).toLocaleDateString()}
                     </p>
                     <hr className="my-2" />
                     <p className="font-semibold bg-blue-200 text-center rounded-lg text-gray-700">
-                      {flight.arrDate}
+                    {new Date(flight.arrivalDate).toLocaleDateString()}
                     </p>
                     <hr className="my-2" />
                     <p className="font-semibold bg-blue-200 text-center rounded-lg text-gray-700">
-                      ${flight.price}
+                      ${flight.ticketPrice}
                     </p>
                     <hr className="my-2" />
                     <p className="font-semibold bg-blue-200 text-center rounded-lg text-gray-700">

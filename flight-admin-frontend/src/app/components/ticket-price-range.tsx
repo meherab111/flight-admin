@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -11,6 +12,8 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import axios from "axios";
+import { useRouter } from 'next/navigation';
 
 ChartJS.register(
   CategoryScale,
@@ -21,186 +24,116 @@ ChartJS.register(
   Legend
 );
 
-const dummyFlights = [
-  {
-    flightNumber: "FLY123",
-    airline: "Delta Airlines",
-    departureCity: "New York",
-    arrivalCity: "London",
-    depDate: "2024-12-20",
-    arrDate: "2024-12-25",
-    price: 130,
-    availability: "Available",
-  },
-  {
-    flightNumber: "FLY456",
-    airline: "American Airlines",
-    departureCity: "Chicago",
-    arrivalCity: "Paris",
-    depDate: "2024-12-22",
-    arrDate: "2024-12-28",
-    price: 130,
-    availability: "Available",
-  },
-  {
-    flightNumber: "FLY456",
-    airline: "American Airlines 2.0",
-    departureCity: "Chicago 2.0",
-    arrivalCity: "Paris 2.0",
-    depDate: "2024-12-22",
-    arrDate: "2024-12-28",
-    price: 130,
-    availability: "Available",
-  },
-  {
-    flightNumber: "FLY456",
-    airline: "American Airlines 3.0",
-    departureCity: "Chicago 3.0",
-    arrivalCity: "Paris 3.0",
-    depDate: "2024-12-22",
-    arrDate: "2024-12-28",
-    price: 130,
-    availability: "Available",
-  },
-  {
-    flightNumber: "FLY456",
-    airline: "American Airlines 3.0",
-    departureCity: "Chicago 3.0",
-    arrivalCity: "Paris 3.0",
-    depDate: "2024-12-22",
-    arrDate: "2024-12-28",
-    price: 150,
-    availability: "Available",
-  },
-  {
-    flightNumber: "FLY456",
-    airline: "American Airlines 3.0",
-    departureCity: "Chicago 3.0",
-    arrivalCity: "Paris 3.0",
-    depDate: "2024-12-22",
-    arrDate: "2024-12-28",
-    price: 160,
-    availability: "Available",
-  },
-  {
-    flightNumber: "FLY456",
-    airline: "American Airlines 3.0",
-    departureCity: "Chicago 3.0",
-    arrivalCity: "Paris 3.0",
-    depDate: "2024-12-22",
-    arrDate: "2024-12-28",
-    price: 170,
-    availability: "Available",
-  },
-  {
-    flightNumber: "FLY456",
-    airline: "American Airlines 3.0",
-    departureCity: "Chicago 3.0",
-    arrivalCity: "Paris 3.0",
-    depDate: "2024-12-22",
-    arrDate: "2024-12-28",
-    price: 180,
-    availability: "Available",
-  },
-  {
-    flightNumber: "FLY456",
-    airline: "American Airlines 3.0",
-    departureCity: "Chicago 3.0",
-    arrivalCity: "Paris 3.0",
-    depDate: "2024-12-22",
-    arrDate: "2024-12-28",
-    price: 190,
-    availability: "Available",
-  },
-  {
-    flightNumber: "FLY456",
-    airline: "American Airlines 3.0",
-    departureCity: "Chicago 3.0",
-    arrivalCity: "Paris 3.0",
-    depDate: "2024-12-22",
-    arrDate: "2024-12-28",
-    price: 200,
-    availability: "Available",
-  },
-  {
-    flightNumber: "FLY456",
-    airline: "American Airlines 3.0",
-    departureCity: "Chicago 3.0",
-    arrivalCity: "Paris 3.0",
-    depDate: "2024-12-22",
-    arrDate: "2024-12-28",
-    price: 210,
-    availability: "Available",
-  },
-  {
-    flightNumber: "FLY456",
-    airline: "American Airlines 3.0",
-    departureCity: "Chicago 3.0",
-    arrivalCity: "Paris 3.0",
-    depDate: "2024-12-22",
-    arrDate: "2024-12-28",
-    price: 220,
-    availability: "Available",
-  },
-  {
-    flightNumber: "FLY456",
-    airline: "American Airlines 3.0",
-    departureCity: "Chicago 3.0",
-    arrivalCity: "Paris 3.0",
-    depDate: "2024-12-22",
-    arrDate: "2024-12-28",
-    price: 230,
-    availability: "Available",
-  },
-  {
-    flightNumber: "FLY456",
-    airline: "American Airlines 3.0",
-    departureCity: "Chicago 3.0",
-    arrivalCity: "Paris 3.0",
-    depDate: "2024-12-22",
-    arrDate: "2024-12-28",
-    price: 240,
-    availability: "Available",
-  },
-];
-
-// Define the type for the price frequency map
-interface PriceFrequency {
-  [key: number]: number;
+interface ChartData {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    backgroundColor: string;
+  }[];
 }
 
-// Extract prices and create a frequency map
-const priceFrequency: PriceFrequency = dummyFlights.reduce(
-  (acc: PriceFrequency, flight) => {
-    acc[flight.price] = (acc[flight.price] || 0) + 1;
-    return acc;
-  },
-  {}
-);
-
-// Convert the frequency map to arrays for the bar chart
-const labels = Object.keys(priceFrequency).map((price) => `$${price}`);
-const data = Object.values(priceFrequency);
-
-const chartData = {
-  labels,
-  datasets: [
-    {
-      label: "Flight Prices",
-      data,
-      backgroundColor: "rgba(75, 192, 192)",
-    },
-  ],
-};
-
 const PriceBarChart = () => {
+  const [chartData, setChartData] = useState<ChartData | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchFlightData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push('/login-landing-page'); // Redirect to login page
+        return;
+      }
+
+      try {
+        const response = await axios.get("http://localhost:3000/flights", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const flights = response.data;
+
+        // Define the type for the price frequency map
+        interface PriceFrequency {
+          [key: string]: number;
+        }
+
+        // Extract prices and create a frequency map
+        const priceFrequency: PriceFrequency = flights.reduce((acc: PriceFrequency, flight: { airline: string, ticketPrice: number }) => {
+          const key = flight.airline;
+          acc[key] = (acc[key] || 0) + Number(flight.ticketPrice); // Ensure ticketPrice is treated as a number
+          return acc;
+        }, {});
+
+        // Debugging: Log the price frequency map
+        console.log("Price Frequency Map:", priceFrequency);
+
+        // Convert the frequency map to arrays for the bar chart
+        const labels = Object.keys(priceFrequency);
+        const data = Object.values(priceFrequency);
+
+        // Debugging: Log the labels and data
+        console.log("Labels:", labels);
+        console.log("Data:", data);
+
+        const chartData = {
+          labels,
+          datasets: [
+            {
+              label: "Flight Prices",
+              data,
+              backgroundColor: "rgba(75, 192, 192)",
+            },
+          ],
+        };
+
+        setChartData(chartData);
+      } catch (error) {
+        console.error("Error fetching flight data:", error);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      fetchFlightData();
+    }
+  }, [router]);
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      tooltip: {
+        callbacks: {
+          title: (tooltipItems: any) => {
+            return tooltipItems[0].label;
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          maxRotation: 90,
+          minRotation: 90,
+          autoSkip: false,
+        },
+      },
+      y: {
+        beginAtZero: true,
+      },
+    },
+  };
+
   return (
     <div className="bg-teal-50 pl-16 pt-6 pb-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold text-gray-700 mb-10 text-center">
         Price Range Bar
       </h2>
       <div style={{ height: 300, width: "100%" }}>
-        <Bar data={chartData} />
+        {chartData ? <Bar data={chartData} options={options} /> : <p>Loading...</p>}
       </div>
     </div>
   );

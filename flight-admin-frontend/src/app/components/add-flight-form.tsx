@@ -7,6 +7,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const AddFlightForm: React.FC = () => {
   const [flightData, setFlightData] = useState({
@@ -14,13 +16,14 @@ const AddFlightForm: React.FC = () => {
     airline: "",
     departureCity: "",
     arrivalCity: "",
-    depDate: "",
-    arrDate: "",
-    price: "",
+    departureDate: "",
+    arrivalDate: "",
+    ticketPrice: "",
     availability: "",
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -29,40 +32,145 @@ const AddFlightForm: React.FC = () => {
     setFlightData({ ...flightData, [name]: value });
   };
 
-  const handleAddFlight = () => {
-    const isEmptyField = Object.values(flightData).some(
-      (value) => value.trim() === ""
-    );
-    if (isEmptyField) {
-      toast.error("Please fill in all fields before adding the flight.", {
+  const validateFields = () => {
+    const {
+      flightNumber,
+      airline,
+      departureCity,
+      arrivalCity,
+      departureDate,
+      arrivalDate,
+      ticketPrice,
+      availability,
+    } = flightData;
+
+    if (!flightNumber.trim()) {
+      toast.error("Flight Number is required.", { autoClose: 3000 });
+      return false;
+    }
+    if (!airline.trim()) {
+      toast.error("Airline is required.", { autoClose: 3000 });
+      return false;
+    }
+    if (!departureCity.trim()) {
+      toast.error("Departure City is required.", { autoClose: 3000 });
+      return false;
+    }
+    if (!arrivalCity.trim()) {
+      toast.error("Arrival City is required.", { autoClose: 3000 });
+      return false;
+    }
+    if (
+      !departureDate.trim() ||
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(departureDate)
+    ) {
+      toast.error("Valid Departure Date is required (YYYY-MM-DDTHH:MM).", {
         autoClose: 3000,
       });
+      return false;
+    }
+    if (
+      !arrivalDate.trim() ||
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(arrivalDate)
+    ) {
+      toast.error("Valid Arrival Date is required (YYYY-MM-DDTHH:MM).", {
+        autoClose: 3000,
+      });
+      return false;
+    }
+    if (
+      !ticketPrice.trim() ||
+      isNaN(Number(ticketPrice)) ||
+      Number(ticketPrice) <= 0 ||
+      Number(ticketPrice) > 1000
+    ) {
+      toast.error("Valid Ticket Price is required (0 < price <= 1000).", {
+        autoClose: 3000,
+      });
+      return false;
+    }
+    if (
+      !availability.trim() ||
+      !["available", "unavailable"].includes(availability)
+    ) {
+      toast.error("Valid Availability is required (available/unavailable).", {
+        autoClose: 3000,
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const handleAddFlight = async () => {
+    if (!validateFields()) {
       return;
     }
 
-    // Display toast notification
-    toast.success(`Flight ${flightData.flightNumber} added successfully!`, {
-      autoClose: 3000,
-    });
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/login-landing-page"); // Redirect to login page
+        return;
+      }
 
-    // Reset input fields
-    setFlightData({
-      flightNumber: "",
-      airline: "",
-      departureCity: "",
-      arrivalCity: "",
-      depDate: "",
-      arrDate: "",
-      price: "",
-      availability: "",
-    });
+      // Convert ticketPrice to number
+      const flightDataWithNumberPrice = {
+        ...flightData,
+        ticketPrice: Number(flightData.ticketPrice),
+      };
 
-    // Close modal
-    setIsModalOpen(false);
+      await axios.post(
+        "http://localhost:3000/flights",
+        flightDataWithNumberPrice,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Display toast notification
+      toast.success(`Flight ${flightData.flightNumber} added successfully!`, {
+        autoClose: 3000,
+      });
+
+      // Reset input fields
+      setFlightData({
+        flightNumber: "",
+        airline: "",
+        departureCity: "",
+        arrivalCity: "",
+        departureDate: "",
+        arrivalDate: "",
+        ticketPrice: "",
+        availability: "",
+      });
+
+      // Close modal
+      setIsModalOpen(false);
+    } catch (error) {
+      if (error) {
+        console.error("Error response data:", error);
+      }
+      toast.error("Error adding flight. Please try again.", {
+        autoClose: 3000,
+      });
+    }
   };
 
   const handleModalOpen = () => setIsModalOpen(true);
   const handleModalClose = () => {
+          // Reset input fields
+      setFlightData({
+        flightNumber: "",
+        airline: "",
+        departureCity: "",
+        arrivalCity: "",
+        departureDate: "",
+        arrivalDate: "",
+        ticketPrice: "",
+        availability: "",
+      });
     toast.dismiss(); // Dismiss all active toast notifications
     setIsModalOpen(false); // Close the modal
   };
@@ -103,9 +211,21 @@ const AddFlightForm: React.FC = () => {
                 { label: "Airline", name: "airline" },
                 { label: "Departure City", name: "departureCity" },
                 { label: "Arrival City", name: "arrivalCity" },
-                { label: "Departure Date", name: "depDate", type: "date" },
-                { label: "Arrival Date", name: "arrDate", type: "date" },
-                { label: "Price (USD)", name: "price", type: "number" },
+                {
+                  label: "Departure Date",
+                  name: "departureDate",
+                  type: "datetime-local",
+                },
+                {
+                  label: "Arrival Date",
+                  name: "arrivalDate",
+                  type: "datetime-local",
+                },
+                {
+                  label: "Ticket Price (USD)",
+                  name: "ticketPrice",
+                  type: "number",
+                },
               ].map(({ label, name, type = "text" }) => (
                 <div key={name}>
                   <label className="block font-semibold text-gray-700 mb-2">
@@ -132,8 +252,8 @@ const AddFlightForm: React.FC = () => {
                   className="select select-bordered w-full rounded-lg border-blue-400"
                 >
                   <option value="">Select Availability</option>
-                  <option value="Available">Available</option>
-                  <option value="Unavailable">Unavailable</option>
+                  <option value="available">Available</option>
+                  <option value="unavailable">Unavailable</option>
                 </select>
               </div>
             </div>

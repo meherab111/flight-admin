@@ -147,7 +147,7 @@ const AdminInfoPopup = () => {
                 <FontAwesomeIcon icon={faTimes} />
               </button>
             </div>
-            <div className="flex items-center mb-6">
+            <div className="flex justify-center mb-6">
               <img
                 src="/images/user-icon.png"
                 alt="User"
