@@ -23,7 +23,7 @@ function DashboardPage() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        throw new Error('No token found');
+        router.push('/login-landing-page');
       }
 
       await axios.post('http://localhost:3000/flight-admin-login/logout', {}, {

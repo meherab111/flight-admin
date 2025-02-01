@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useRouter } from "next/navigation";
 
 // Define the type for flight data
 interface FlightData {
@@ -18,6 +19,7 @@ interface FlightData {
 }
 
 export default function SearchBar() {
+   const router = useRouter();
   // State for search term
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -31,7 +33,7 @@ export default function SearchBar() {
   const handleSearch = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please log in to search for flights.");
+      router.push('/login-landing-page'); // Redirect to login page
       return;
     }
 

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useRouter } from 'next/navigation';
 
 interface FlightData {
   flightNumber: string;
@@ -9,12 +10,13 @@ interface FlightData {
 
 export default function FlightNumberBox() {
   const [flightNumbers, setFlightNumbers] = useState<FlightData[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchFlightNumbers = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Please log in to view flight numbers.");
+        router.push('/login-landing-page'); // Redirect to login page
         return;
       }
 

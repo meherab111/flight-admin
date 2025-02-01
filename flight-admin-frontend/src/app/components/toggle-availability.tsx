@@ -4,45 +4,94 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Flight {
   id: number;
   flightNumber: string;
   availability: string;
+  departureDate: string;
+  arrivalDate: string;
 }
 
 const ToggleAvailability: React.FC = () => {
   const [isToggleModalOpen, setIsToggleModalOpen] = useState(false);
-  const [flights, setFlights] = useState<Flight[]>([
-    {
-      id: 1,
-      flightNumber: "AA123",
-      availability: "Available",
-    },
-    {
-      id: 2,
-      flightNumber: "BA456",
-      availability: "Unavailable",
-    },
-  ]);
+  const [flights, setFlights] = useState<Flight[]>([]);
 
-  const toggleAvailability = (flightId: number) => {
-    setFlights(
-      flights.map((flight) =>
-        flight.id === flightId
-          ? {
-              ...flight,
-              availability:
-                flight.availability === "Available"
-                  ? "Unavailable"
-                  : "Available",
-            }
-          : flight
-      )
-    );
+  const fetchFlights = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Please log in to view flights.");
+        return;
+      }
+
+      const response = await axios.get("http://localhost:3000/flights", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setFlights(response.data);
+    } catch (error) {
+      toast.error("Error fetching flights. Please try again.");
+      console.error("Error fetching flights:", error);
+    }
   };
 
+  useEffect(() => {
+    fetchFlights();
+  }, []);
+
+  const toggleAvailability = async (flightId: number) => {
+    const flight = flights.find((flight) => flight.id === flightId);
+    if (!flight) return;
+
+    const newAvailability =
+      flight.availability === "available" ? "unavailable" : "available";
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Please log in to toggle availability.");
+        return;
+      }
+
+      await axios.patch(
+        `http://localhost:3000/flights/${flightId}/toggle-availability`,
+        { availability: newAvailability },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setFlights(
+        flights.map((flight) =>
+          flight.id === flightId
+            ? { ...flight, availability: newAvailability }
+            : flight
+        )
+      );
+
+      toast.success("Flight availability toggled successfully!");
+    } catch (error) {
+      if (error) {
+        toast.error("Endpoint not found. Please check the URL.");
+      } else {
+        toast.error("Error toggling flight availability. Please try again.");
+      }
+      console.error("Error toggling flight availability:", error);
+    }
+  };
+  const handleCloseModal = () => {
+    toast.dismiss(); // Dismiss all active toasts
+    setIsToggleModalOpen(false); // Close the modal
+  };
   return (
     <div>
       <button
@@ -63,7 +112,7 @@ const ToggleAvailability: React.FC = () => {
               </h2>
 
               <button
-                onClick={() => setIsToggleModalOpen(false)}
+                onClick={handleCloseModal}
                 className="text-red-600 font-bold text-2xl cursor-pointer"
               >
                 <FontAwesomeIcon icon={faTimes} />
@@ -74,6 +123,12 @@ const ToggleAvailability: React.FC = () => {
                 <tr className="bg-blue-100">
                   <th className="border border-gray-600 text-gray-700 px-4 py-2">
                     Flight Number
+                  </th>
+                  <th className="border border-gray-600 text-gray-700 px-4 py-2">
+                    Departure Date
+                  </th>
+                  <th className="border border-gray-600 text-gray-700 px-4 py-2">
+                    Arrival Date
                   </th>
                   <th className="border border-gray-600 text-gray-700 px-4 py-2">
                     Availability
@@ -90,12 +145,18 @@ const ToggleAvailability: React.FC = () => {
                       {flight.flightNumber}
                     </td>
                     <td className="border border-gray-600 text-gray-700 px-4 py-2">
+                      {new Date(flight.departureDate).toLocaleString()}
+                    </td>
+                    <td className="border border-gray-600 text-gray-700 px-4 py-2">
+                      {new Date(flight.arrivalDate).toLocaleString()}
+                    </td>
+                    <td className="border border-gray-600 text-gray-700 px-4 py-2">
                       {flight.availability}
                     </td>
                     <td className="border border-gray-600 text-gray-700 px-4 py-2">
                       <div
                         className={`relative inline-block w-12 h-6 ${
-                          flight.availability === "Available"
+                          flight.availability === "available"
                             ? "bg-green-500"
                             : "bg-red-500"
                         } rounded-full cursor-pointer`}
@@ -103,7 +164,7 @@ const ToggleAvailability: React.FC = () => {
                       >
                         <span
                           className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transform transition-transform duration-300 ${
-                            flight.availability === "Available"
+                            flight.availability === "available"
                               ? "translate-x-6"
                               : "translate-x-0"
                           }`}
@@ -117,6 +178,8 @@ const ToggleAvailability: React.FC = () => {
           </div>
         </div>
       )}
+
+      <ToastContainer />
     </div>
   );
 };
