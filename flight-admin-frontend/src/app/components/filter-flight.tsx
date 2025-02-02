@@ -1,58 +1,90 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTimes,
   faFilter,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const formatDateTime = (dateTime: string) => {
+  const date = new Date(dateTime);
+  const formattedDate = date.toISOString().slice(0, 10);
+  const formattedTime = date.toTimeString().slice(0, 8);
+  return `${formattedDate} ${formattedTime}`;
+};
 
 const FilterFlight = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [minPrice, setMinPrice] = useState<number | "">("");
   const [maxPrice, setMaxPrice] = useState<number | "">("");
-  const flights = [
-    {
-      id: 1,
-      flightNumber: "AA123",
-      airline: "American Airlines",
-      departureCity: "New York",
-      arrivalCity: "Los Angeles",
-      depDate: "2025-01-30",
-      arrDate: "2025-01-30",
-      price: 300,
-      availability: "Available",
-    },
-    {
-      id: 2,
-      flightNumber: "BA456",
-      airline: "British Airways",
-      departureCity: "London",
-      arrivalCity: "Paris",
-      depDate: "2025-02-01",
-      arrDate: "2025-02-01",
-      price: 200,
-      availability: "Unavailable",
-    },
-    {
-      id: 3,
-      flightNumber: "NA456",
-      airline: "Nepal Airways",
-      departureCity: "Nepal",
-      arrivalCity: "Bangladesh",
-      depDate: "2025-03-12",
-      arrDate: "2025-03-14",
-      price: 180,
-      availability: "Available",
-    },
-  ];
+  const [flights, setFlights] = useState<any[]>([]);
+  const [filteredFlights, setFilteredFlights] = useState<any[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const filteredFlights = flights.filter((flight) => {
-    if (minPrice !== "" && flight.price < minPrice) return false;
-    if (maxPrice !== "" && flight.price > maxPrice) return false;
-    return true;
-  });
+  // Fetch all flights data when the component mounts
+  useEffect(() => {
+    const fetchFlights = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Please log in to view flights.");
+        return;
+      }
+
+      try {
+        const response = await axios.get("http://localhost:3000/flights", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setFlights(response.data);
+        setFilteredFlights(response.data); // Initially show all flights
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response && error.response.status === 401) {
+            toast.error("Unauthorized access. Please log in again.");
+          } else {
+            toast.error("Error fetching flights. Please try again.");
+          }
+        } else {
+          toast.error("An unexpected error occurred. Please try again.");
+        }
+        console.error("Error fetching flights:", error);
+      }
+    };
+
+    fetchFlights();
+  }, []);
+
+  // Filter flights data locally
+  const filterFlights = () => {
+    if (minPrice !== "" && maxPrice !== "" && minPrice === maxPrice) {
+      setErrorMessage("Min and Max prices cannot be the same.");
+      setFilteredFlights([]);
+      return;
+    } else {
+      setErrorMessage("");
+    }
+  
+    const filtered = flights.filter((flight) => {
+      const price = flight.ticketPrice;
+      return (
+        (minPrice === "" || price >= minPrice) &&
+        (maxPrice === "" || price <= maxPrice)
+      );
+    });
+  
+    setFilteredFlights(filtered);
+  };
+
+  useEffect(() => {
+    filterFlights();
+  },[minPrice, maxPrice]);
 
   return (
     <div>
@@ -68,8 +100,8 @@ const FilterFlight = () => {
 
       {/* Filter Popup */}
       {showFilter && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[30%] max-w-2xl h-[70vh] overflow-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 backdrop-blur-sm">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[30%] max-w-2xl h-[70vh] overflow-auto transform scale-105">
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-blue-600">
@@ -80,6 +112,8 @@ const FilterFlight = () => {
                   setShowFilter(false);
                   setMinPrice("");
                   setMaxPrice("");
+                  setFilteredFlights(flights); // Reset to show all flights
+                  setErrorMessage("");
                 }}
                 className="text-red-600 font-bold text-2xl cursor-pointer"
               >
@@ -89,41 +123,36 @@ const FilterFlight = () => {
 
             {/* Price Range Inputs */}
             <div className="flex gap-4 mb-4">
-              <input
-                type="text"
-                value={minPrice}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (
-                    value === "" ||
-                    (/^\d+$/.test(value) && parseInt(value) <= 100000)
-                  ) {
-                    setMinPrice(
-                      value === "" ? "" : Math.max(0, parseInt(value))
-                    );
-                  }
-                }}
-                placeholder="Min Price"
-                className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
-              <input
-                type="text"
-                value={maxPrice}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (
-                    value === "" ||
-                    (/^\d+$/.test(value) && parseInt(value) <= 100000)
-                  ) {
-                    setMaxPrice(
-                      value === "" ? "" : Math.max(0, parseInt(value))
-                    );
-                  }
-                }}
-                placeholder="Max Price"
-                className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
-            </div>
+  <input
+    type="number"
+    step="0.01"
+    value={minPrice}
+    onChange={(e) => {
+      const value = e.target.value;
+      if (value === "" || parseFloat(value) <= 100000) {
+        setMinPrice(value === "" ? "" : Math.max(0, parseFloat(value)));
+      }
+    }}
+    placeholder="Min Price"
+    className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+  />
+  <input
+    type="number"
+    step="0.01"
+    value={maxPrice}
+    onChange={(e) => {
+      const value = e.target.value;
+      if (value === "" || parseFloat(value) <= 100000) {
+        setMaxPrice(value === "" ? "" : Math.max(0, parseFloat(value)));
+      }
+    }}
+    placeholder="Max Price"
+    className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+  />
+</div>
+            {errorMessage && (
+              <p className="text-red-600 text-center mb-4">{errorMessage}</p>
+            )}
 
             {/* Scrollable Flight List */}
             <div className="space-y-4">
@@ -184,15 +213,15 @@ const FilterFlight = () => {
                         </p>
                         <hr className="my-2" />
                         <p className="font-semibold bg-blue-200 text-center rounded-lg text-gray-700">
-                          {flight.depDate}
+                          {formatDateTime(flight.departureDate)}
                         </p>
                         <hr className="my-2" />
                         <p className="font-semibold bg-blue-200 text-center rounded-lg text-gray-700">
-                          {flight.arrDate}
+                          {formatDateTime(flight.arrivalDate)}
                         </p>
                         <hr className="my-2" />
                         <p className="font-semibold bg-blue-200 text-center rounded-lg text-gray-700">
-                          ${flight.price}
+                          ${flight.ticketPrice}
                         </p>
                         <hr className="my-2" />
                         <p className="font-semibold bg-blue-200 text-center rounded-lg text-gray-700">
@@ -212,6 +241,8 @@ const FilterFlight = () => {
           </div>
         </div>
       )}
+
+      <ToastContainer />
     </div>
   );
 };

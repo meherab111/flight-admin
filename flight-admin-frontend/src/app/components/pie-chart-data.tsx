@@ -9,7 +9,7 @@ import FlightNumberBox from "./scrollable-flightNumber";
 // Register necessary components for the Doughnut chart
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function FlightStatistics() {
+const FlightStatistics: React.FC = () => {
   const [totalFlights, setTotalFlights] = useState(0);
   const [availableFlights, setAvailableFlights] = useState(0);
   const router = useRouter();
@@ -39,15 +39,21 @@ export default function FlightStatistics() {
     if (typeof window !== 'undefined') {
       fetchFlightStatistics();
     }
+
+    // Set up polling to fetch updates periodically
+    const intervalId = setInterval(fetchFlightStatistics, 5000); // Fetch updates every 5 seconds
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
   }, [router]);
 
   // Data for the Doughnut chart
   const chartData = {
-    labels: [ "Total Flights","Available Flights"],
+    labels: ["Total Flights", "Available Flights"],
     datasets: [
       {
         data: [availableFlights, totalFlights - availableFlights],
-        backgroundColor: ["#A5B4FC","#34D399"], // Green for available, blue for others
+        backgroundColor: ["#A5B4FC", "#34D399"], // Green for available, blue for others
         borderWidth: 1,
         hoverOffset: 10, // Adds some animation effect on hover
       },
@@ -58,22 +64,22 @@ export default function FlightStatistics() {
     <div className="grid grid-cols-1 gap-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-4">
-        <div className="bg-blue-100 text-center p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-gray-700">Total Flights</h2>
-          <p className="text-5xl font-bold text-blue-600 mt-2">
-            {totalFlights}
-          </p>
+          <div className="bg-blue-100 text-center p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold text-gray-700">Total Flights</h2>
+            <p className="text-5xl font-bold text-blue-600 mt-2">
+              {totalFlights}
+            </p>
+          </div>
+          <div className="bg-blue-100 text-center p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold text-gray-700">
+              Available Flights
+            </h2>
+            <p className="text-5xl font-bold text-blue-600 mt-2">
+              {availableFlights}
+            </p>
+          </div>
         </div>
-        <div className="bg-blue-100 text-center p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-gray-700">
-            Available Flights
-          </h2>
-          <p className="text-5xl font-bold text-blue-600 mt-2">
-            {availableFlights}
-          </p>
-        </div>
-        </div>
-        <FlightNumberBox/>
+        <FlightNumberBox />
       </div>
 
       <div className="bg-indigo-50 p-8 rounded-lg shadow-md">
@@ -92,4 +98,6 @@ export default function FlightStatistics() {
       </div>
     </div>
   );
-}
+};
+
+export default FlightStatistics;

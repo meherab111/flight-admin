@@ -105,7 +105,7 @@ export class FlightAdminLoginService {
       { id: user.ID, email: user.email },
       {
         secret: 's>myRb69oSecretPnYP4Kv0_!_Q8NgPLH7KEY_0_/3gJQ9H+dUcN7965DlU++p',
-        expiresIn: '24h',
+        expiresIn: '6h',
       },
     );
 

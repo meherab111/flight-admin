@@ -189,8 +189,8 @@ const AddFlightForm: React.FC = () => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 sm:w-2/3 lg:w-1/2 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 sm:w-2/3 lg:w-1/2 relative transform scale-105">
             {/* Modal Header */}
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-blue-600">

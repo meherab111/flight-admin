@@ -12,7 +12,7 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule.register({
       global: true,
       secret: 's>myRb69oSecretPnYP4Kv0_!_Q8NgPLH7KEY_0_/3gJQ9H+dUcN7965DlU++p',
-      signOptions: { expiresIn: '24h' },
+      signOptions: { expiresIn: '6h' },
     }),
   ],
   providers: [FlightAdminLoginService],

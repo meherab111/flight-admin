@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -17,7 +18,44 @@ import AdminInfoPopup from "../components/admin-info";
 import addAuth from "../components/add-auth";
 
 function DashboardPage() {
+  const [flightData, setFlightData] = useState([]);
   const router = useRouter();
+
+  useEffect(() => {
+    // Fetch initial data when the component mounts
+    const fetchFlightData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push('/login-landing-page'); // Redirect to login page if no token
+        return;
+      }
+
+      try {
+        const response = await axios.get("http://localhost:3000/flights", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setFlightData(response.data);
+      } catch (error) {
+        if (error) {
+          // Handle unauthorized error
+          console.error("Unauthorized access - redirecting to login.");
+          router.push('/login-landing-page'); // Redirect to login page
+        } else {
+          console.error("Error fetching flight data:", error);
+        }
+      }
+    };
+
+    fetchFlightData();
+
+    // Set up polling to fetch updates periodically
+    const intervalId = setInterval(fetchFlightData, 5000); // Fetch updates every 5 seconds
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [router]);
 
   const handleLogout = async () => {
     try {
@@ -99,7 +137,7 @@ function DashboardPage() {
             <FlightStatistics />
             <div className="grid grid-col gap-4">
               {/* Weather Card */}
-              <PriceBarChart />
+              <PriceBarChart flightData={flightData} />
               <WeatherCard city="Dhaka" />
             </div>
           </div>

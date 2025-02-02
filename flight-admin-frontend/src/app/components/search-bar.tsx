@@ -57,7 +57,8 @@ export default function SearchBar() {
         setSearchTerm("");
       }
     } catch {
-      alert("An error occurred while fetching flight data.");
+      setSearchTerm("");
+      alert("Wrong Input ! Can't find Data.");
     }
   };
 
@@ -99,8 +100,8 @@ export default function SearchBar() {
 
       {/* Modal Popup */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-8 rounded-lg w-1/2 md:w-1/3 max-h-[80vh] overflow-y-auto shadow-lg">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 backdrop-blur-sm">
+          <div className="bg-white p-8 rounded-lg w-1/2 md:w-1/3 max-h-[80vh] overflow-y-auto shadow-lg transform scale-105">
           
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-blue-600">
