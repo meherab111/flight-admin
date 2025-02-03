@@ -49,7 +49,9 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ city }) => {
 
   return (
     <div className="bg-rose-100 text-center p-4 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold text-gray-700 mb-4">Weather & Time</h2>
+      <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+        Weather & Time
+      </h2>
       {error ? (
         <p className="text-red-500">{error}</p>
       ) : weather.temp !== null ? (

@@ -36,11 +36,14 @@ const PriceBarChart: React.FC<PriceBarChartProps> = ({ flightData }) => {
     }
 
     // Extract prices and create a frequency map
-    const priceFrequency: PriceFrequency = flightData.reduce((acc: PriceFrequency, flight) => {
-      const key = flight.airline;
-      acc[key] = (acc[key] || 0) + Number(flight.ticketPrice); // Ensure ticketPrice is treated as a number
-      return acc;
-    }, {});
+    const priceFrequency: PriceFrequency = flightData.reduce(
+      (acc: PriceFrequency, flight) => {
+        const key = flight.airline;
+        acc[key] = (acc[key] || 0) + Number(flight.ticketPrice); // Ensure ticketPrice is treated as a number
+        return acc;
+      },
+      {}
+    );
 
     // Convert the frequency map to arrays for the bar chart
     const labels = Object.keys(priceFrequency);
@@ -64,7 +67,7 @@ const PriceBarChart: React.FC<PriceBarChartProps> = ({ flightData }) => {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top' as const,
+        position: "top" as const,
       },
       tooltip: {
         callbacks: {
@@ -94,7 +97,11 @@ const PriceBarChart: React.FC<PriceBarChartProps> = ({ flightData }) => {
         Price Range Bar
       </h2>
       <div style={{ height: 300, width: "100%" }}>
-        {chartData ? <Bar data={chartData} options={options} /> : <p>Loading...</p>}
+        {chartData ? (
+          <Bar data={chartData} options={options} />
+        ) : (
+          <p>Loading...</p>
+        )}
       </div>
     </div>
   );

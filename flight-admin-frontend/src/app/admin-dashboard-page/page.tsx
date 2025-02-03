@@ -5,7 +5,10 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignOutAlt, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSignOutAlt,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 import WeatherCard from "../components/weather-card";
 import SearchBar from "../components/search-bar";
 import ToggleAvailability from "../components/toggle-availability";
@@ -26,7 +29,7 @@ function DashboardPage() {
     const fetchFlightData = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push('/login-landing-page'); // Redirect to login page if no token
+        router.push("/login-landing-page"); // Redirect to login page if no token
         return;
       }
 
@@ -41,7 +44,7 @@ function DashboardPage() {
         if (error) {
           // Handle unauthorized error
           console.error("Unauthorized access - redirecting to login.");
-          router.push('/login-landing-page'); // Redirect to login page
+          router.push("/login-landing-page"); // Redirect to login page
         } else {
           console.error("Error fetching flight data:", error);
         }
@@ -51,7 +54,7 @@ function DashboardPage() {
     fetchFlightData();
 
     // Set up polling to fetch updates periodically
-    const intervalId = setInterval(fetchFlightData, 5000); // Fetch updates every 5 seconds
+    const intervalId = setInterval(fetchFlightData, 2000); // Fetch updates every 5 seconds
 
     // Clean up the interval on component unmount
     return () => clearInterval(intervalId);
@@ -59,21 +62,25 @@ function DashboardPage() {
 
   const handleLogout = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        router.push('/login-landing-page');
+        router.push("/login-landing-page");
       }
 
-      await axios.post('http://localhost:3000/flight-admin-login/logout', {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.post(
+        "http://localhost:3000/flight-admin-login/logout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      localStorage.removeItem('token');
-      router.push('/login-landing-page'); // Redirect to login page after logout
+      localStorage.removeItem("token");
+      router.push("/login-landing-page"); // Redirect to login page after logout
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
     }
   };
 
@@ -102,7 +109,7 @@ function DashboardPage() {
       {/* Main Content */}
       <div className="flex flex-1">
         {/* Sidebar */}
-        <div className="flex flex-col justify-between bg-blue-100 p-4">
+        <div className="flex flex-col xl:flex-col xl:justify-start justify-between bg-blue-100 p-4">
           <div>
             {/* Sidebar Buttons */}
             <AddFlightForm />
@@ -132,10 +139,10 @@ function DashboardPage() {
           </h1>
 
           {/* Cards */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 xl:grid-cols-1 gap-4">
             {/* Pie Chart */}
             <FlightStatistics />
-            <div className="grid grid-col gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {/* Weather Card */}
               <PriceBarChart flightData={flightData} />
               <WeatherCard city="Dhaka" />

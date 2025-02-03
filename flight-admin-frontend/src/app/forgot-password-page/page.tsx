@@ -2,30 +2,40 @@
 // pages/forgot-password.tsx
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import Notification from "../components/notification"; // Import the Notification component
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState(""); // Added state for notification
   const router = useRouter();
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email) {
-      setMessage('Please enter your email.');
+      setMessage("Please enter your email.");
       return;
     }
+    if (!emailRegex.test(email)) {
+      setMessage("Please enter a valid email address.");
+      return;
+    }
+    setMessage("");
     setLoading(true);
     try {
-      await axios.post('http://localhost:3000/flight-admin-login/forgot-password', { email });
-      toast.success('Password reset email sent. Please check your inbox.');
+      await axios.post(
+        "http://localhost:3000/flight-admin-login/forgot-password",
+        { email }
+      );
+      setNotification("Password reset email sent. Please check your inbox.");
     } catch (error) {
-      if(axios.isAxiosError(error)){
-        setMessage('Error sending password reset email. Please try again.');
+      if (axios.isAxiosError(error)) {
+        setMessage("Error sending password reset email. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -33,13 +43,14 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <><div className="flex h-screen">
+    <div className="flex h-screen">
       {/* Left side: Plane Image */}
       <div className="w-1/2 h-full">
         <img
           src="/images/plane_image_login_page.jpg"
           alt="Plane"
-          className="object-cover w-full h-full" />
+          className="object-cover w-full h-full"
+        />
       </div>
 
       {/* Right side: Forgot Password Form */}
@@ -48,14 +59,17 @@ export default function ForgotPasswordPage() {
           <img
             src="/images/flying-airplane.png"
             alt="Building"
-            className="h-20" />
+            className="h-20"
+          />
         </div>
 
         <div className="w-3/4 max-w-md bg-blue-50 p-8 rounded-lg shadow-lg transform transition-all duration-500 ease-in-out animate__animated animate__fadeInUp">
           <h1 className="text-3xl font-semibold text-center text-blue-500 mb-2">
             Forgot Password?
           </h1>
-          <p className="text-center text-gray-600 mb-6">Enter your email to receive a password reset link.</p>
+          <p className="text-center text-gray-600 mb-6">
+            Enter your email to receive a password reset link.
+          </p>
 
           <form onSubmit={handleForgotPassword} className="space-y-6">
             <input
@@ -63,13 +77,16 @@ export default function ForgotPasswordPage() {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="input input-bordered w-full transition-all duration-300 ease-in-out transform hover:scale-105" />
-            <button className="btn btn-primary w-full hover:bg-blue-700 animate__animated animate__zoomIn" disabled={loading}>
-              {loading ? 'Sending...' : 'SUBMIT'}
+              className="input input-bordered w-full transition-all duration-300 ease-in-out transform hover:scale-105"
+            />
+            {message && <p className="text-red-500 text-center">{message}</p>}
+            <button
+              className="btn btn-primary w-full hover:bg-blue-700 animate__animated animate__zoomIn"
+              disabled={loading}
+            >
+              {loading ? "Sending..." : "SUBMIT"}
             </button>
           </form>
-
-          {message && <p className="text-center text-gray-600 mt-4">{message}</p>}
 
           {/* Back Button */}
           <div className="mt-4 flex justify-center">
@@ -86,6 +103,14 @@ export default function ForgotPasswordPage() {
           <img src="/images/paper-plane.png" alt="Building" className="h-20" />
         </div>
       </div>
-    </div><ToastContainer /></>
+
+      {/* Notification */}
+      {notification && (
+        <Notification
+          message={notification}
+          onClose={() => setNotification("")}
+        />
+      )}
+    </div>
   );
 }

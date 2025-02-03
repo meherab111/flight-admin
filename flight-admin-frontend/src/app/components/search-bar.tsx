@@ -19,7 +19,7 @@ interface FlightData {
 }
 
 export default function SearchBar() {
-   const router = useRouter();
+  const router = useRouter();
   // State for search term
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -33,18 +33,22 @@ export default function SearchBar() {
   const handleSearch = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      router.push('/login-landing-page'); // Redirect to login page
+      router.push("/login-landing-page"); // Redirect to login page
       return;
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/flights/search", {
-        flightNumber: searchTerm.toUpperCase()
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await axios.post(
+        "http://localhost:3000/flights/search",
+        {
+          flightNumber: searchTerm.toUpperCase(),
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const flights = response.data;
 
@@ -102,7 +106,6 @@ export default function SearchBar() {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 backdrop-blur-sm">
           <div className="bg-white p-8 rounded-lg w-1/2 md:w-1/3 max-h-[80vh] overflow-y-auto shadow-lg transform scale-105">
-          
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-blue-600">
                 Searched Flight Details
@@ -157,11 +160,11 @@ export default function SearchBar() {
                     </p>
                     <hr className="my-2" />
                     <p className="font-semibold bg-blue-200 text-center rounded-lg text-gray-700">
-                    {new Date(flight.departureDate).toLocaleDateString()}
+                      {new Date(flight.departureDate).toLocaleDateString()}
                     </p>
                     <hr className="my-2" />
                     <p className="font-semibold bg-blue-200 text-center rounded-lg text-gray-700">
-                    {new Date(flight.arrivalDate).toLocaleDateString()}
+                      {new Date(flight.arrivalDate).toLocaleDateString()}
                     </p>
                     <hr className="my-2" />
                     <p className="font-semibold bg-blue-200 text-center rounded-lg text-gray-700">

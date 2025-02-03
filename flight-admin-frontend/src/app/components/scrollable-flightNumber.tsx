@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 interface FlightData {
   flightNumber: string;
@@ -16,20 +16,24 @@ export default function FlightNumberBox() {
     const fetchFlightNumbers = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push('/login-landing-page'); // Redirect to login page
+        router.push("/login-landing-page"); // Redirect to login page
         return;
       }
 
       try {
-        const response = await axios.get<FlightData[]>("http://localhost:3000/flights", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get<FlightData[]>(
+          "http://localhost:3000/flights",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         // Use a Set to filter out duplicate flight numbers
-        const uniqueFlightNumbers = Array.from(new Set(response.data.map((flight) => flight.flightNumber)))
-          .map(flightNumber => ({ flightNumber }));
+        const uniqueFlightNumbers = Array.from(
+          new Set(response.data.map((flight) => flight.flightNumber))
+        ).map((flightNumber) => ({ flightNumber }));
 
         setFlightNumbers(uniqueFlightNumbers);
       } catch (error) {

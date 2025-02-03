@@ -25,12 +25,12 @@ const ToggleAvailability: React.FC = () => {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [searchTerm, setSearchTerm] = useState(""); // Added state for search term
   const [searchResults, setSearchResults] = useState<Flight[]>([]); // Added state for search results
-  
+
   const fetchFlights = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        toast.error("Please log in to view flights.");
+        router.push("/login-landing-page"); // Redirect to login page if no token
         return;
       }
 
@@ -63,17 +63,17 @@ const ToggleAvailability: React.FC = () => {
   const toggleAvailability = async (flightId: number) => {
     const flight = flights.find((flight) => flight.id === flightId);
     if (!flight) return;
-  
+
     const newAvailability =
       flight.availability === "available" ? "unavailable" : "available";
-  
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        toast.error("Please log in to toggle availability.");
+        router.push("/login-landing-page"); // Redirect to login page if no token
         return;
       }
-  
+
       await axios.patch(
         `http://localhost:3000/flights/${flightId}/toggle-availability`,
         { availability: newAvailability },
@@ -83,7 +83,7 @@ const ToggleAvailability: React.FC = () => {
           },
         }
       );
-  
+
       setFlights(
         flights.map((flight) =>
           flight.id === flightId
@@ -118,22 +118,26 @@ const ToggleAvailability: React.FC = () => {
     setIsToggleModalOpen(false); // Close the modal
   };
   // Function to handle search
- const searchBarRef = useRef<HTMLInputElement>(null);
+  const searchBarRef = useRef<HTMLInputElement>(null);
   const handleSearch = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push('/login-landing-page');
+        router.push("/login-landing-page");
         return;
       }
 
-      const response = await axios.post("http://localhost:3000/flights/search", {
-        flightNumber: searchTerm.toUpperCase()
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await axios.post(
+        "http://localhost:3000/flights/search",
+        {
+          flightNumber: searchTerm.toUpperCase(),
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const flights = response.data;
       if (flights.length > 0) {
@@ -148,11 +152,11 @@ const ToggleAvailability: React.FC = () => {
       setSearchTerm("");
     }
   };
-    // Function to reset search and fetch all flights
-    const resetSearch = () => {
-      setSearchResults(flights); // Reset search results to all flights
-      setSearchTerm(""); // Clear the search term
-    };
+  // Function to reset search and fetch all flights
+  const resetSearch = () => {
+    setSearchResults(flights); // Reset search results to all flights
+    setSearchTerm(""); // Clear the search term
+  };
 
   return (
     <div>
@@ -168,7 +172,10 @@ const ToggleAvailability: React.FC = () => {
       {isToggleModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 backdrop-blur-sm">
           <div className="bg-white p-6 rounded-lg shadow-lg w-4/5 max-h-[80vh] overflow-auto transform scale-105">
-            <div ref={searchBarRef} className="flex justify-between items-center mb-4">
+            <div
+              ref={searchBarRef}
+              className="flex justify-between items-center mb-4"
+            >
               <h2 className="text-2xl font-bold text-blue-600">
                 Toggle Flight Availability
               </h2>
@@ -180,44 +187,44 @@ const ToggleAvailability: React.FC = () => {
                 <FontAwesomeIcon icon={faTimes} />
               </button>
             </div>
-                    {/* search bar */}
-        <div className="relative flex mb-4">
-        <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-blue-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M21 21l-4.35-4.35m0 0a7.5 7.5 0 10-10.6 0 7.5 7.5 0 0010.6 0z"
-            />
-          </svg>
-        </span>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by Flight Number"
-            className="input input-bordered rounded-lg border-blue-400 pl-10 w-full"
-          />
-          <button
-            onClick={handleSearch}
-            className="btn btn-primary bg-green-500 border-0 ml-2 hover:bg-green-700"
-          >
-            Search
-          </button>
-          <button
-            onClick={resetSearch}
-            className="btn btn-primary ml-2 hover:bg-blue-700"
-          >
-            Reset
-          </button>
-        </div>
+            {/* search bar */}
+            <div className="relative flex mb-4">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-blue-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-4.35-4.35m0 0a7.5 7.5 0 10-10.6 0 7.5 7.5 0 0010.6 0z"
+                  />
+                </svg>
+              </span>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by Flight Number"
+                className="input input-bordered rounded-lg border-blue-400 pl-10 w-full"
+              />
+              <button
+                onClick={handleSearch}
+                className="btn btn-primary bg-green-500 border-0 ml-2 hover:bg-green-700"
+              >
+                Search
+              </button>
+              <button
+                onClick={resetSearch}
+                className="btn btn-primary ml-2 hover:bg-blue-700"
+              >
+                Reset
+              </button>
+            </div>
             <table className="table-auto w-full border-collapse border border-gray-600">
               <thead>
                 <tr className="bg-blue-100">
@@ -260,10 +267,14 @@ const ToggleAvailability: React.FC = () => {
                             ? "bg-green-500"
                             : "bg-red-500"
                         } rounded-full cursor-pointer`}
-                        onClick={() => {if (searchBarRef.current) {
-                          searchBarRef.current.scrollIntoView({ behavior: 'smooth' });
-                        }
-                        toggleAvailability(flight.id)}}
+                        onClick={() => {
+                          if (searchBarRef.current) {
+                            searchBarRef.current.scrollIntoView({
+                              behavior: "smooth",
+                            });
+                          }
+                          toggleAvailability(flight.id);
+                        }}
                       >
                         <span
                           className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transform transition-transform duration-300 ${

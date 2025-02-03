@@ -70,7 +70,7 @@ const FilterFlight = () => {
     } else {
       setErrorMessage("");
     }
-  
+
     const filtered = flights.filter((flight) => {
       const price = flight.ticketPrice;
       return (
@@ -78,13 +78,13 @@ const FilterFlight = () => {
         (maxPrice === "" || price <= maxPrice)
       );
     });
-  
+
     setFilteredFlights(filtered);
   };
 
   useEffect(() => {
     filterFlights();
-  },[minPrice, maxPrice]);
+  }, [minPrice, maxPrice]);
 
   return (
     <div>
@@ -101,7 +101,7 @@ const FilterFlight = () => {
       {/* Filter Popup */}
       {showFilter && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 backdrop-blur-sm">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[30%] max-w-2xl h-[70vh] overflow-auto transform scale-105">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[30%] max-w-2xl h-[70vh] overflow-auto transform scale-105 xl:w-[50%] xl:max-h-[90vh] xl:transform scale-100 xl:p-8">
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-blue-600">
@@ -123,33 +123,37 @@ const FilterFlight = () => {
 
             {/* Price Range Inputs */}
             <div className="flex gap-4 mb-4">
-  <input
-    type="number"
-    step="0.01"
-    value={minPrice}
-    onChange={(e) => {
-      const value = e.target.value;
-      if (value === "" || parseFloat(value) <= 100000) {
-        setMinPrice(value === "" ? "" : Math.max(0, parseFloat(value)));
-      }
-    }}
-    placeholder="Min Price"
-    className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-  />
-  <input
-    type="number"
-    step="0.01"
-    value={maxPrice}
-    onChange={(e) => {
-      const value = e.target.value;
-      if (value === "" || parseFloat(value) <= 100000) {
-        setMaxPrice(value === "" ? "" : Math.max(0, parseFloat(value)));
-      }
-    }}
-    placeholder="Max Price"
-    className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-  />
-</div>
+              <input
+                type="number"
+                step="0.01"
+                value={minPrice}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || parseFloat(value) <= 100000) {
+                    setMinPrice(
+                      value === "" ? "" : Math.max(0, parseFloat(value))
+                    );
+                  }
+                }}
+                placeholder="Min Price"
+                className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+              <input
+                type="number"
+                step="0.01"
+                value={maxPrice}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || parseFloat(value) <= 100000) {
+                    setMaxPrice(
+                      value === "" ? "" : Math.max(0, parseFloat(value))
+                    );
+                  }
+                }}
+                placeholder="Max Price"
+                className="border border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
             {errorMessage && (
               <p className="text-red-600 text-center mb-4">{errorMessage}</p>
             )}

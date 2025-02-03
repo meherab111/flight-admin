@@ -1,14 +1,13 @@
 import React, { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import {
   faChevronRight,
   faPlane,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import Notification from "./notification"; // Import the Notification component
 
 const AddFlightForm: React.FC = () => {
   const [flightData, setFlightData] = useState({
@@ -23,6 +22,7 @@ const AddFlightForm: React.FC = () => {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [notification, setNotification] = useState(""); // Added state for notification
   const router = useRouter();
 
   const handleInputChange = (
@@ -45,37 +45,33 @@ const AddFlightForm: React.FC = () => {
     } = flightData;
 
     if (!flightNumber.trim()) {
-      toast.error("Flight Number is required.", { autoClose: 3000 });
+      setNotification("Flight Number is required.");
       return false;
     }
     if (!airline.trim()) {
-      toast.error("Airline is required.", { autoClose: 3000 });
+      setNotification("Airline is required.");
       return false;
     }
     if (!departureCity.trim()) {
-      toast.error("Departure City is required.", { autoClose: 3000 });
+      setNotification("Departure City is required.");
       return false;
     }
     if (!arrivalCity.trim()) {
-      toast.error("Arrival City is required.", { autoClose: 3000 });
+      setNotification("Arrival City is required.");
       return false;
     }
     if (
       !departureDate.trim() ||
       !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(departureDate)
     ) {
-      toast.error("Valid Departure Date is required (YYYY-MM-DDTHH:MM).", {
-        autoClose: 3000,
-      });
+      setNotification("Valid Departure Date is required (YYYY-MM-DDTHH:MM).");
       return false;
     }
     if (
       !arrivalDate.trim() ||
       !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(arrivalDate)
     ) {
-      toast.error("Valid Arrival Date is required (YYYY-MM-DDTHH:MM).", {
-        autoClose: 3000,
-      });
+      setNotification("Valid Arrival Date is required (YYYY-MM-DDTHH:MM).");
       return false;
     }
     if (
@@ -84,18 +80,16 @@ const AddFlightForm: React.FC = () => {
       Number(ticketPrice) <= 0 ||
       Number(ticketPrice) > 1000
     ) {
-      toast.error("Valid Ticket Price is required (0 < price <= 1000).", {
-        autoClose: 3000,
-      });
+      setNotification("Valid Ticket Price is required (0 < price <= 1000).");
       return false;
     }
     if (
       !availability.trim() ||
       !["available", "unavailable"].includes(availability)
     ) {
-      toast.error("Valid Availability is required (available/unavailable).", {
-        autoClose: 3000,
-      });
+      setNotification(
+        "Valid Availability is required (available/unavailable)."
+      );
       return false;
     }
     return true;
@@ -129,10 +123,8 @@ const AddFlightForm: React.FC = () => {
         }
       );
 
-      // Display toast notification
-      toast.success(`Flight ${flightData.flightNumber} added successfully!`, {
-        autoClose: 3000,
-      });
+      // Display notification
+      setNotification(`Flight ${flightData.flightNumber} added successfully!`);
 
       // Reset input fields
       setFlightData({
@@ -146,32 +138,33 @@ const AddFlightForm: React.FC = () => {
         availability: "",
       });
 
-      // Close modal
-      setIsModalOpen(false);
+      // Close modal after a delay
+      setTimeout(() => {
+        setIsModalOpen(false);
+        setNotification(""); // Clear notification
+      }, 3000);
     } catch (error) {
       if (error) {
         console.error("Error response data:", error);
       }
-      toast.error("Error adding flight. Please try again.", {
-        autoClose: 3000,
-      });
+      setNotification("Error adding flight. Please try again.");
     }
   };
 
   const handleModalOpen = () => setIsModalOpen(true);
   const handleModalClose = () => {
-          // Reset input fields
-      setFlightData({
-        flightNumber: "",
-        airline: "",
-        departureCity: "",
-        arrivalCity: "",
-        departureDate: "",
-        arrivalDate: "",
-        ticketPrice: "",
-        availability: "",
-      });
-    toast.dismiss(); // Dismiss all active toast notifications
+    // Reset input fields
+    setFlightData({
+      flightNumber: "",
+      airline: "",
+      departureCity: "",
+      arrivalCity: "",
+      departureDate: "",
+      arrivalDate: "",
+      ticketPrice: "",
+      availability: "",
+    });
+    setNotification(""); // Clear notification
     setIsModalOpen(false); // Close the modal
   };
 
@@ -190,7 +183,14 @@ const AddFlightForm: React.FC = () => {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 sm:w-2/3 lg:w-1/2 relative transform scale-105">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 sm:w-2/3 lg:w-1/2 xl:w-9/11 relative">
+            {/* Notification */}
+            {notification && (
+              <Notification
+                message={notification}
+                onClose={() => setNotification("")}
+              />
+            )}
             {/* Modal Header */}
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-blue-600">
@@ -205,7 +205,7 @@ const AddFlightForm: React.FC = () => {
             </div>
 
             {/* Form */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
                 { label: "Flight Number", name: "flightNumber" },
                 { label: "Airline", name: "airline" },
@@ -268,9 +268,6 @@ const AddFlightForm: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Toast Notifications */}
-      <ToastContainer />
     </div>
   );
 };

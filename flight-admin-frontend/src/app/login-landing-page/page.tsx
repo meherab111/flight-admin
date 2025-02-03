@@ -6,31 +6,34 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username || !password) {
-      setError('Username and password are required');
+      setError("Username and password are required");
       return;
     }
-    setError('');
+    setError("");
     try {
-      const response = await axios.post('http://localhost:3000/flight-admin-login/login', {
-        username,
-        password,
-      });
+      const response = await axios.post(
+        "http://localhost:3000/flight-admin-login/login",
+        {
+          username,
+          password,
+        }
+      );
       const token = response.data.access_token; // Adjust based on your backend response structure
-      localStorage.setItem('token', token);
-      router.push('./admin-dashboard-page'); // Redirect to dashboard after login
+      localStorage.setItem("token", token);
+      router.push("./admin-dashboard-page"); // Redirect to dashboard after login
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
-        setError('Invalid username or password. Please try again.');
+        setError("Invalid username or password. Please try again.");
       } else {
-        setError('An unexpected error occurred. Please try again later.');
+        setError("An unexpected error occurred. Please try again later.");
       }
     }
   };

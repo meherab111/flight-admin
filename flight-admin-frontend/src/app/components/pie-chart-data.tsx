@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import axios from "axios";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import FlightNumberBox from "./scrollable-flightNumber";
 
 // Register necessary components for the Doughnut chart
@@ -18,16 +18,19 @@ const FlightStatistics: React.FC = () => {
     const fetchFlightStatistics = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push('/login-landing-page'); // Redirect to login page
+        router.push("/login-landing-page"); // Redirect to login page
         return;
       }
 
       try {
-        const response = await axios.get("http://localhost:3000/flights/statistics", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(
+          "http://localhost:3000/flights/statistics",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         setTotalFlights(response.data.totalFlights);
         setAvailableFlights(response.data.availableFlights);
@@ -36,7 +39,7 @@ const FlightStatistics: React.FC = () => {
       }
     };
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       fetchFlightStatistics();
     }
 
@@ -65,7 +68,9 @@ const FlightStatistics: React.FC = () => {
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-4">
           <div className="bg-blue-100 text-center p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-700">Total Flights</h2>
+            <h2 className="text-xl font-semibold text-gray-700">
+              Total Flights
+            </h2>
             <p className="text-5xl font-bold text-blue-600 mt-2">
               {totalFlights}
             </p>

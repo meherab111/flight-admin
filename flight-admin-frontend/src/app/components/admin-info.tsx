@@ -2,9 +2,8 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState, useEffect } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import Notification from "./notification"; // Import the Notification component
 
 const AdminInfoPopup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,6 +14,8 @@ const AdminInfoPopup = () => {
     password: "",
     email: "",
   });
+  const [notification, setNotification] = useState(""); // Added state for notification
+  const [error, setError] = useState(""); // Added state for error
 
   useEffect(() => {
     const fetchAdminInfo = async () => {
@@ -24,9 +25,8 @@ const AdminInfoPopup = () => {
           throw new Error("No access token found");
         }
 
-        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        const decodedToken = JSON.parse(atob(token.split(".")[1]));
         const adminId = decodedToken.sub;
-
 
         const response = await axios.post(
           "http://localhost:3000/flight-admin-login/admin-info",
@@ -38,14 +38,13 @@ const AdminInfoPopup = () => {
           }
         );
 
-
         setAdminInfo(response.data);
         setEmail(response.data.email);
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          toast.error('Error fetching admin info.');
+          setNotification("Error fetching admin info.");
         } else {
-          toast.error('Error decoding token or fetching admin info.');
+          setNotification("Error decoding token or fetching admin info.");
         }
       }
     };
@@ -54,16 +53,22 @@ const AdminInfoPopup = () => {
   }, []);
 
   const handleEmailUpdate = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    setError("");
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
         throw new Error("No access token found");
       }
 
-      const decodedToken = JSON.parse(atob(token.split('.')[1]));
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
       const adminId = decodedToken.sub;
 
-  
       const response = await axios.patch(
         "http://localhost:3000/flight-admin-login/update-email",
         { id: adminId, email },
@@ -73,18 +78,10 @@ const AdminInfoPopup = () => {
           },
         }
       );
-  
+
       console.log("Update Response:", response.data); // Debugging
-  
-      toast.success(`Email updated to: ${email}`, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+
+      setNotification(`Email updated to: ${email}`);
     } catch (error) {
       let errorMessage = "Error updating email. Please try again.";
       if (axios.isAxiosError(error)) {
@@ -95,33 +92,24 @@ const AdminInfoPopup = () => {
         // Non-Axios error
         console.error("Error:", error);
       }
-  
-      toast.error(errorMessage, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+
+      setNotification(errorMessage);
     }
   };
 
-  const handleEmailChange = (e: { target: { value: React.SetStateAction<string> } }) => {
+  const handleEmailChange = (e: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
     setEmail(e.target.value); // Update email state
   };
 
   const handleCloseModal = () => {
-    toast.dismiss(); // Dismiss all active toasts
+    setNotification(""); // Clear notification
     setIsModalOpen(false); // Close the modal
   };
 
   return (
     <div className="relative">
-      {/* Toast Container */}
-      <ToastContainer />
-
       {/* User Icon */}
       <div className="flex items-center">
         <img
@@ -136,6 +124,13 @@ const AdminInfoPopup = () => {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="bg-white p-8 rounded-lg w-1/2 md:w-1/3 max-h-[80vh] overflow-y-auto shadow-lg transform scale-105">
+            {/* Notification */}
+            {notification && (
+              <Notification
+                message={notification}
+                onClose={() => setNotification("")}
+              />
+            )}
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-blue-600">
                 Admin Information
@@ -147,6 +142,7 @@ const AdminInfoPopup = () => {
                 <FontAwesomeIcon icon={faTimes} />
               </button>
             </div>
+
             <div className="flex justify-center mb-6">
               <img
                 src="/images/user-icon.png"
@@ -201,6 +197,7 @@ const AdminInfoPopup = () => {
                   onChange={handleEmailChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
+                {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
               </div>
             </div>
             <div className="mt-4 flex justify-end space-x-3">
