@@ -6,7 +6,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
 
-// Define the type for flight data
+// Defining the type for flight data
 interface FlightData {
   flightNumber: string;
   airline: string;
@@ -20,20 +20,18 @@ interface FlightData {
 
 export default function SearchBar() {
   const router = useRouter();
-  // State for search term
+ 
   const [searchTerm, setSearchTerm] = useState("");
 
-  // State for modal visibility
   const [showModal, setShowModal] = useState(false);
 
-  // State for flight details in the modal
   const [modalData, setModalData] = useState<FlightData[]>([]);
 
   // Handle search functionality
   const handleSearch = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      router.push("/login-landing-page"); // Redirect to login page
+      router.push("/login-landing-page"); // Redirecting to login page
       return;
     }
 
@@ -53,8 +51,8 @@ export default function SearchBar() {
       const flights = response.data;
 
       if (flights.length > 0) {
-        setModalData(flights); // Set flight details in the modal
-        setShowModal(true); // Show the modal
+        setModalData(flights); 
+        setShowModal(true);
         setSearchTerm("");
       } else {
         alert("Flight Details Not Found!");
@@ -66,10 +64,10 @@ export default function SearchBar() {
     }
   };
 
-  // Handle key press in the input field
+ 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && searchTerm.trim()) {
-      handleSearch(); // Trigger search on Enter
+      handleSearch();
     }
   };
 
@@ -97,8 +95,8 @@ export default function SearchBar() {
           placeholder="Search (Flight No.)..."
           className="input input-bordered rounded-lg border-blue-400 pl-10 w-full"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)} // Update search term
-          onKeyDown={handleKeyDown} // Handle Enter key
+          onChange={(e) => setSearchTerm(e.target.value)} 
+          onKeyDown={handleKeyDown} 
         />
       </div>
 

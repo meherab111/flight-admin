@@ -27,7 +27,7 @@ const FilterFlight = () => {
   const [filteredFlights, setFilteredFlights] = useState<any[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  // Fetch all flights data when the component mounts
+ 
   useEffect(() => {
     const fetchFlights = async () => {
       const token = localStorage.getItem("token");
@@ -43,7 +43,7 @@ const FilterFlight = () => {
           },
         });
         setFlights(response.data);
-        setFilteredFlights(response.data); // Initially show all flights
+        setFilteredFlights(response.data); 
       } catch (error) {
         if (axios.isAxiosError(error)) {
           if (error.response && error.response.status === 401) {
@@ -61,7 +61,7 @@ const FilterFlight = () => {
     fetchFlights();
   }, []);
 
-  // Filter flights data locally
+
   const filterFlights = () => {
     if (minPrice !== "" && maxPrice !== "" && minPrice === maxPrice) {
       setErrorMessage("Min and Max prices cannot be the same.");
@@ -88,7 +88,7 @@ const FilterFlight = () => {
 
   return (
     <div>
-      {/* Filter Button */}
+     
       <button
         className="btn btn-primary w-full mb-4 flex justify-between items-center hover:bg-blue-700"
         onClick={() => setShowFilter(true)}
@@ -98,11 +98,11 @@ const FilterFlight = () => {
         <FontAwesomeIcon icon={faChevronRight} className="h-5 w-5 ml-2" />
       </button>
 
-      {/* Filter Popup */}
+      
       {showFilter && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 backdrop-blur-sm">
           <div className="bg-white p-6 rounded-lg shadow-lg w-[30%] max-w-2xl h-[70vh] overflow-auto transform scale-105 xl:w-[50%] xl:max-h-[90vh] xl:transform scale-100 xl:p-8">
-            {/* Header */}
+           
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-blue-600">
                 Filter Flights By Price
@@ -112,7 +112,7 @@ const FilterFlight = () => {
                   setShowFilter(false);
                   setMinPrice("");
                   setMaxPrice("");
-                  setFilteredFlights(flights); // Reset to show all flights
+                  setFilteredFlights(flights); 
                   setErrorMessage("");
                 }}
                 className="text-red-600 font-bold text-2xl cursor-pointer"
@@ -121,7 +121,7 @@ const FilterFlight = () => {
               </button>
             </div>
 
-            {/* Price Range Inputs */}
+           
             <div className="flex gap-4 mb-4">
               <input
                 type="number"
@@ -158,7 +158,7 @@ const FilterFlight = () => {
               <p className="text-red-600 text-center mb-4">{errorMessage}</p>
             )}
 
-            {/* Scrollable Flight List */}
+            
             <div className="space-y-4">
               {filteredFlights.length > 0 ? (
                 filteredFlights.map((flight) => (

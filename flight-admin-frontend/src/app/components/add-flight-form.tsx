@@ -7,7 +7,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import Notification from "./notification"; // Import the Notification component
+import Notification from "./notification"; 
 
 const AddFlightForm: React.FC = () => {
   const [flightData, setFlightData] = useState({
@@ -22,7 +22,7 @@ const AddFlightForm: React.FC = () => {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [notification, setNotification] = useState(""); // Added state for notification
+  const [notification, setNotification] = useState(""); 
   const router = useRouter();
 
   const handleInputChange = (
@@ -103,11 +103,11 @@ const AddFlightForm: React.FC = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/login-landing-page"); // Redirect to login page
+        router.push("/login-landing-page"); // Redirecting to login page
         return;
       }
 
-      // Convert ticketPrice to number
+     
       const flightDataWithNumberPrice = {
         ...flightData,
         ticketPrice: Number(flightData.ticketPrice),
@@ -123,10 +123,10 @@ const AddFlightForm: React.FC = () => {
         }
       );
 
-      // Display notification
+      
       setNotification(`Flight ${flightData.flightNumber} added successfully!`);
 
-      // Reset input fields
+     
       setFlightData({
         flightNumber: "",
         airline: "",
@@ -138,10 +138,10 @@ const AddFlightForm: React.FC = () => {
         availability: "",
       });
 
-      // Close modal after a delay
+      
       setTimeout(() => {
         setIsModalOpen(false);
-        setNotification(""); // Clear notification
+        setNotification(""); 
       }, 3000);
     } catch (error) {
       if (error) {
@@ -153,7 +153,7 @@ const AddFlightForm: React.FC = () => {
 
   const handleModalOpen = () => setIsModalOpen(true);
   const handleModalClose = () => {
-    // Reset input fields
+   
     setFlightData({
       flightNumber: "",
       airline: "",
@@ -164,13 +164,13 @@ const AddFlightForm: React.FC = () => {
       ticketPrice: "",
       availability: "",
     });
-    setNotification(""); // Clear notification
-    setIsModalOpen(false); // Close the modal
+    setNotification(""); 
+    setIsModalOpen(false); 
   };
 
   return (
     <div>
-      {/* Button to Open Modal */}
+     
       <button
         onClick={handleModalOpen}
         className="btn btn-primary w-full mb-4 flex justify-between items-center hover:bg-blue-700"
@@ -180,18 +180,18 @@ const AddFlightForm: React.FC = () => {
         <FontAwesomeIcon icon={faChevronRight} className="h-5 w-5 ml-2" />
       </button>
 
-      {/* Modal */}
+      
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 sm:w-2/3 lg:w-1/2 xl:w-9/11 relative">
-            {/* Notification */}
+            {/* Notification added */}
             {notification && (
               <Notification
                 message={notification}
                 onClose={() => setNotification("")}
               />
             )}
-            {/* Modal Header */}
+           
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-blue-600">
                 Add New Flight Details
@@ -204,7 +204,7 @@ const AddFlightForm: React.FC = () => {
               </button>
             </div>
 
-            {/* Form */}
+           
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
                 { label: "Flight Number", name: "flightNumber" },
@@ -258,7 +258,7 @@ const AddFlightForm: React.FC = () => {
               </div>
             </div>
 
-            {/* Submit Button */}
+           
             <button
               onClick={handleAddFlight}
               className="btn btn-primary mt-6 w-full bg-green-500 py-2 px-4 rounded-lg border-0 hover:bg-green-700"

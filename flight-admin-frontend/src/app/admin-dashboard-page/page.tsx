@@ -25,11 +25,11 @@ function DashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Fetch initial data when the component mounts
+   
     const fetchFlightData = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/login-landing-page"); // Redirect to login page if no token
+        router.push("/login-landing-page"); // Redirecting to login page if no token found
         return;
       }
 
@@ -42,9 +42,9 @@ function DashboardPage() {
         setFlightData(response.data);
       } catch (error) {
         if (error) {
-          // Handle unauthorized error
+          
           console.error("Unauthorized access - redirecting to login.");
-          router.push("/login-landing-page"); // Redirect to login page
+          router.push("/login-landing-page"); // Redirecting to login page
         } else {
           console.error("Error fetching flight data:", error);
         }
@@ -53,10 +53,10 @@ function DashboardPage() {
 
     fetchFlightData();
 
-    // Set up polling to fetch updates periodically
-    const intervalId = setInterval(fetchFlightData, 2000); // Fetch updates every 5 seconds
+    
+    const intervalId = setInterval(fetchFlightData, 2000);
 
-    // Clean up the interval on component unmount
+   
     return () => clearInterval(intervalId);
   }, [router]);
 
@@ -78,7 +78,7 @@ function DashboardPage() {
       );
 
       localStorage.removeItem("token");
-      router.push("/login-landing-page"); // Redirect to login page after logout
+      router.push("/login-landing-page"); // Redirecting to login page 
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -86,9 +86,9 @@ function DashboardPage() {
 
   return (
     <div className="h-screen flex flex-col">
-      {/* Header */}
+      
       <header className="flex items-center justify-between px-4 py-2 bg-blue-100">
-        {/* Logo */}
+        
         <div className="flex items-center gap-2">
           <img
             src="/images/flight-logo.png"
@@ -102,19 +102,22 @@ function DashboardPage() {
 
         {/* Search Bar */}
         <SearchBar />
-
+        {/* Admin Info Popup */}
         <AdminInfoPopup />
       </header>
 
-      {/* Main Content */}
+      
       <div className="flex flex-1">
-        {/* Sidebar */}
+        
         <div className="flex flex-col xl:flex-col xl:justify-start justify-between bg-blue-100 p-4">
           <div>
-            {/* Sidebar Buttons */}
+            {/* Add Flights */}
             <AddFlightForm />
+            {/* Manage Flights */}
             <ManageFlights />
+            {/* Toggle Flights */}
             <ToggleAvailability />
+            {/* Filter Flights */}
             <FilterFlight />
           </div>
 
@@ -132,19 +135,20 @@ function DashboardPage() {
           </button>
         </div>
 
-        {/* Dashboard Cards */}
+        
         <main className="flex-1 p-4 bg-white">
           <h1 className="text-2xl font-bold text-gray-700 mb-4">
             Flight Overview
           </h1>
 
-          {/* Cards */}
+          
           <div className="grid grid-cols-2 xl:grid-cols-1 gap-4">
             {/* Pie Chart */}
             <FlightStatistics />
             <div className="grid grid-cols-1 gap-4">
-              {/* Weather Card */}
+              {/* Price Range Bar */}
               <PriceBarChart flightData={flightData} />
+              {/* Weather and Time */}
               <WeatherCard city="Dhaka" />
             </div>
           </div>

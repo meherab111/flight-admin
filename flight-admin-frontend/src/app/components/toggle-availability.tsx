@@ -23,14 +23,14 @@ const ToggleAvailability: React.FC = () => {
   const router = useRouter();
   const [isToggleModalOpen, setIsToggleModalOpen] = useState(false);
   const [flights, setFlights] = useState<Flight[]>([]);
-  const [searchTerm, setSearchTerm] = useState(""); // Added state for search term
-  const [searchResults, setSearchResults] = useState<Flight[]>([]); // Added state for search results
+  const [searchTerm, setSearchTerm] = useState(""); 
+  const [searchResults, setSearchResults] = useState<Flight[]>([]); 
 
   const fetchFlights = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/login-landing-page"); // Redirect to login page if no token
+        router.push("/login-landing-page"); // Redirecting to login page if no token found
         return;
       }
 
@@ -41,7 +41,7 @@ const ToggleAvailability: React.FC = () => {
       });
 
       setFlights(response.data);
-      setSearchResults(response.data); // Update search results with fetched flights
+      setSearchResults(response.data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response && error.response.status === 401) {
@@ -70,7 +70,7 @@ const ToggleAvailability: React.FC = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/login-landing-page"); // Redirect to login page if no token
+        router.push("/login-landing-page"); // Redirecting to login page if no token found
         return;
       }
 
@@ -113,10 +113,11 @@ const ToggleAvailability: React.FC = () => {
   };
 
   const handleCloseModal = () => {
-    setSearchResults(flights); // Reset search results to all flights
-    setSearchTerm(""); // Clear the search term
-    setIsToggleModalOpen(false); // Close the modal
+    setSearchResults(flights);
+    setSearchTerm("");
+    setIsToggleModalOpen(false);
   };
+
   // Function to handle search
   const searchBarRef = useRef<HTMLInputElement>(null);
   const handleSearch = async () => {
@@ -141,8 +142,8 @@ const ToggleAvailability: React.FC = () => {
 
       const flights = response.data;
       if (flights.length > 0) {
-        setSearchResults(flights); // Set search results in the state
-        setSearchTerm(""); // Clear the search term
+        setSearchResults(flights);
+        setSearchTerm(""); 
       } else {
         toast.error("Flight Details Not Found!");
         setSearchTerm("");
@@ -152,10 +153,10 @@ const ToggleAvailability: React.FC = () => {
       setSearchTerm("");
     }
   };
-  // Function to reset search and fetch all flights
+  
   const resetSearch = () => {
-    setSearchResults(flights); // Reset search results to all flights
-    setSearchTerm(""); // Clear the search term
+    setSearchResults(flights); 
+    setSearchTerm("");
   };
 
   return (

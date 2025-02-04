@@ -6,9 +6,9 @@ function RealTimeClock() {
   useEffect(() => {
     const intervalId = setInterval(() => {
       setTime(new Date());
-    }, 1000); // Update every second
+    }, 1000); 
 
-    return () => clearInterval(intervalId); // Clean up on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   const formattedTime = time.toLocaleTimeString([], {

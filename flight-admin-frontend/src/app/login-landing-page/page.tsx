@@ -26,9 +26,9 @@ export default function LoginPage() {
           password,
         }
       );
-      const token = response.data.access_token; // Adjust based on your backend response structure
+      const token = response.data.access_token;
       localStorage.setItem("token", token);
-      router.push("./admin-dashboard-page"); // Redirect to dashboard after login
+      router.push("./admin-dashboard-page"); // Redirecting to admin dashboard after login
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
         setError("Invalid username or password. Please try again.");
@@ -40,7 +40,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex h-screen">
-      {/* Left side: Plane Image */}
+      {/* Left side part */}
       <div className="w-1/2 h-full">
         <img
           src="/images/plane_image_login_page.jpg"
@@ -49,7 +49,7 @@ export default function LoginPage() {
         />
       </div>
 
-      {/* Right side: Login Form */}
+      {/* Right side part*/}
       <div className="w-1/2 flex flex-col justify-center items-center bg-white opacity-95">
         <div className="text-5xl absolute top-4 right-8 flex gap-4 p-4">
           <img
@@ -58,11 +58,9 @@ export default function LoginPage() {
             className="h-20"
           />
         </div>
-        {/* Animated Login Form */}
+       
         <div className="w-3/4 max-w-md bg-blue-50 p-8 rounded-lg shadow-lg transform transition-all duration-500 ease-in-out animate__animated animate__fadeInUp">
-          {/* Airplane Icon */}
 
-          {/* Welcome Text */}
           <h1 className="text-5xl font text-center text-blue-500 mb-2 animate__animated animate__fadeIn">
             Welcome
           </h1>
@@ -90,7 +88,7 @@ export default function LoginPage() {
             <div className="flex justify-center">
               <span
                 className="text-sm text-blue-500 cursor-pointer hover:underline"
-                onClick={() => router.push("/forgot-password-page")} // Redirect to Forgot Password Page
+                onClick={() => router.push("/forgot-password-page")} // Redirecting to Forgot Password Page
               >
                 Forgot Password?
               </span>
@@ -103,8 +101,6 @@ export default function LoginPage() {
         <div className="text-5xl absolute bottom-4 right-8 flex gap-4 p-4">
           <img src="/images/paper-plane.png" alt="Building" className="h-20" />
         </div>
-
-        {/* Footer Icons (Add social media or other icons here) */}
       </div>
     </div>
   );

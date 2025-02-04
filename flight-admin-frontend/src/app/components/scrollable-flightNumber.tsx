@@ -16,7 +16,7 @@ export default function FlightNumberBox() {
     const fetchFlightNumbers = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/login-landing-page"); // Redirect to login page
+        router.push("/login-landing-page"); // Redirecting to login page
         return;
       }
 
@@ -30,7 +30,7 @@ export default function FlightNumberBox() {
           }
         );
 
-        // Use a Set to filter out duplicate flight numbers
+        
         const uniqueFlightNumbers = Array.from(
           new Set(response.data.map((flight) => flight.flightNumber))
         ).map((flightNumber) => ({ flightNumber }));

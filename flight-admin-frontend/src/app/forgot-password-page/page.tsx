@@ -5,13 +5,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import Notification from "../components/notification"; // Import the Notification component
+import Notification from "../components/notification"; 
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState(""); // Added state for notification
+  const [notification, setNotification] = useState(""); 
   const router = useRouter();
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="flex h-screen">
-      {/* Left side: Plane Image */}
+      {/* Left side part */}
       <div className="w-1/2 h-full">
         <img
           src="/images/plane_image_login_page.jpg"
@@ -53,7 +53,7 @@ export default function ForgotPasswordPage() {
         />
       </div>
 
-      {/* Right side: Forgot Password Form */}
+      {/* Right side part */}
       <div className="w-1/2 flex flex-col justify-center items-center bg-white opacity-95">
         <div className="text-5xl absolute top-4 right-8 flex gap-4 p-4">
           <img
@@ -88,11 +88,11 @@ export default function ForgotPasswordPage() {
             </button>
           </form>
 
-          {/* Back Button */}
+          
           <div className="mt-4 flex justify-center">
             <button
               className="btn border-0 text-gray-600 bg-red-500 hover:bg-red-700"
-              onClick={() => router.push("/login-landing-page")} // Redirect to Login Page
+              onClick={() => router.push("/login-landing-page")} // Redirecting to Login Page
             >
               Back
             </button>
@@ -104,7 +104,7 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
 
-      {/* Notification */}
+      {/* Notification added */}
       {notification && (
         <Notification
           message={notification}

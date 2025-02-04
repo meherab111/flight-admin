@@ -30,22 +30,22 @@ const PriceBarChart: React.FC<PriceBarChartProps> = ({ flightData }) => {
   const [chartData, setChartData] = React.useState<any>(null);
 
   useEffect(() => {
-    // Define the type for the price frequency map
+    
     interface PriceFrequency {
       [key: string]: number;
     }
 
-    // Extract prices and create a frequency map
+    
     const priceFrequency: PriceFrequency = flightData.reduce(
       (acc: PriceFrequency, flight) => {
         const key = flight.airline;
-        acc[key] = (acc[key] || 0) + Number(flight.ticketPrice); // Ensure ticketPrice is treated as a number
+        acc[key] = (acc[key] || 0) + Number(flight.ticketPrice); 
         return acc;
       },
       {}
     );
 
-    // Convert the frequency map to arrays for the bar chart
+    
     const labels = Object.keys(priceFrequency);
     const data = Object.values(priceFrequency);
 

@@ -8,11 +8,12 @@ import {
   faTimes,
   faTrash,
   faEdit,
-} from "@fortawesome/free-solid-svg-icons"; // Added faTrash icon
+} from "@fortawesome/free-solid-svg-icons"; 
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import Notification from "./notification"; // Import the Notification component
+import Notification from "./notification"; 
 
+// Defining the type for flight data
 interface Flight {
   id: number;
   flightNumber: string;
@@ -36,21 +37,21 @@ const ManageFlightsModal: React.FC<{
   flights: Flight[];
   onClose: () => void;
   onUpdate: (updatedFlight: Flight) => void;
-  onDelete: (flightId: number) => void; // Added onDelete prop
+  onDelete: (flightId: number) => void; 
 }> = ({ flights, onClose, onUpdate, onDelete }) => {
   const router = useRouter();
   const [editingFlight, setEditingFlight] = useState<Flight | null>(null);
-  const [notification, setNotification] = useState(""); // Added state for notification
-  const [searchTerm, setSearchTerm] = useState(""); // Added state for search term
-  const [searchResults, setSearchResults] = useState<Flight[]>(flights); // Added state for search results
-  const [errors, setErrors] = useState<{ [key: string]: string }>({}); // Added state for errors
+  const [notification, setNotification] = useState(""); 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState<Flight[]>(flights);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setEditingFlight((prev) => ({ ...prev!, [name]: value }));
-    // Adding "!" ensures prev is not null
+   
   };
 
   const validateFields = () => {
@@ -123,8 +124,8 @@ const ManageFlightsModal: React.FC<{
       }
     }
   };
-  // Function to handle search
 
+  // Function to handle search
   const searchBarRef = useRef<HTMLInputElement>(null);
   const handleSearch = async () => {
     try {
@@ -149,8 +150,8 @@ const ManageFlightsModal: React.FC<{
       const flights = response.data;
       if (flights.length > 0) {
         setEditingFlight(null);
-        setSearchResults(flights); // Set search results in the state
-        setSearchTerm(""); // Clear the search term
+        setSearchResults(flights); 
+        setSearchTerm(""); 
       } else {
         setNotification("Flight Details Not Found!");
         setSearchTerm("");
@@ -160,15 +161,15 @@ const ManageFlightsModal: React.FC<{
       setSearchTerm("");
     }
   };
-  // Function to reset search and fetch all flights
+
   const resetSearch = () => {
-    setSearchResults(flights); // Reset search results to all flights
-    setSearchTerm(""); // Clear the search term
+    setSearchResults(flights);
+    setSearchTerm("");
   };
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 backdrop-blur-sm">
       <div className="bg-white p-6 rounded-lg shadow-lg w-4/5 max-h-[80vh] overflow-auto transform scale-105 xl:transform scale-100 xl:p-3 xl:w-11/12 xl:max-h-[90vh]">
-        {/* Notification */}
+        {/* Notification added */}
         {notification && (
           <Notification
             message={notification}
@@ -189,7 +190,7 @@ const ManageFlightsModal: React.FC<{
             <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
-        {/* search bar */}
+        
         <div className="relative flex mb-4">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3">
             <svg
@@ -229,7 +230,7 @@ const ManageFlightsModal: React.FC<{
         </div>
         {editingFlight && (
           <div className="mt-6 mb-6">
-            {/* Notification */}
+            {/* Notification added */}
             {notification && (
               <Notification
                 message={notification}
@@ -263,10 +264,10 @@ const ManageFlightsModal: React.FC<{
                     {label}
                   </label>
                   {type === "enum" ? (
-                    // Select input for availability
+                   
                     <select
                       name={name}
-                      value={editingFlight[name as keyof Flight]} // Ensure fetched data is shown
+                      value={editingFlight[name as keyof Flight]}
                       onChange={handleInputChange}
                       className="select select-bordered w-full"
                     >
@@ -274,7 +275,7 @@ const ManageFlightsModal: React.FC<{
                       <option value="unavailable">Unavailable</option>
                     </select>
                   ) : (
-                    // Input for other fields
+                   
                     <input
                       type={type}
                       name={name}
@@ -409,7 +410,7 @@ const ManageFlightsModal: React.FC<{
                         );
                         console.error("Error deleting flight:", error);
                       }
-                    }} // Added onDelete click handler
+                    }} 
                     className="btn btn-sm btn-primary bg-red-500 border-0 hover:bg-red-700"
                   >
                     <FontAwesomeIcon icon={faTrash} />
@@ -426,7 +427,7 @@ const ManageFlightsModal: React.FC<{
 const ManageFlights: React.FC = () => {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [notification, setNotification] = useState(""); // Added state for notification
+  const [notification, setNotification] = useState("");
   const [flights, setFlights] = useState<Flight[]>([]);
 
   const fetchFlights = async () => {
@@ -468,7 +469,7 @@ const ManageFlights: React.FC = () => {
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false); // Close the modal
+    setIsModalOpen(false);
   };
 
   return (
@@ -487,7 +488,7 @@ const ManageFlights: React.FC = () => {
           flights={flights}
           onClose={handleCloseModal}
           onUpdate={handleUpdate}
-          onDelete={handleDelete} // Added onDelete prop
+          onDelete={handleDelete}
         />
       )}
     </>

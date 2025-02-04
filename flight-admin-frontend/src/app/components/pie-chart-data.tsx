@@ -6,7 +6,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import FlightNumberBox from "./scrollable-flightNumber";
 
-// Register necessary components for the Doughnut chart
+
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const FlightStatistics: React.FC = () => {
@@ -18,7 +18,7 @@ const FlightStatistics: React.FC = () => {
     const fetchFlightStatistics = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/login-landing-page"); // Redirect to login page
+        router.push("/login-landing-page"); // Redirecting to login page
         return;
       }
 
@@ -43,10 +43,9 @@ const FlightStatistics: React.FC = () => {
       fetchFlightStatistics();
     }
 
-    // Set up polling to fetch updates periodically
-    const intervalId = setInterval(fetchFlightStatistics, 5000); // Fetch updates every 5 seconds
+    const intervalId = setInterval(fetchFlightStatistics, 2000);
 
-    // Clean up the interval on component unmount
+
     return () => clearInterval(intervalId);
   }, [router]);
 
@@ -56,9 +55,9 @@ const FlightStatistics: React.FC = () => {
     datasets: [
       {
         data: [availableFlights, totalFlights - availableFlights],
-        backgroundColor: ["#A5B4FC", "#34D399"], // Green for available, blue for others
+        backgroundColor: ["#A5B4FC", "#34D399"], 
         borderWidth: 1,
-        hoverOffset: 10, // Adds some animation effect on hover
+        hoverOffset: 10,
       },
     ],
   };
@@ -92,9 +91,9 @@ const FlightStatistics: React.FC = () => {
           Flight Statistics
         </h2>
         <div className="relative w-[300px] h-[300px] mx-auto">
-          {/* Doughnut chart */}
+          
           <Doughnut data={chartData} />
-          {/* Center content inside the doughnut */}
+         
           <div className="absolute inset-0 flex flex-col justify-center items-center text-gray-700">
             <p className="text-2xl font-bold">{availableFlights}</p>
             <p className="text-sm font-medium">Available Flights</p>

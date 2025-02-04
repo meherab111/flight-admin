@@ -3,19 +3,19 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Notification from "./notification"; // Import the Notification component
+import Notification from "./notification";
 
 const AdminInfoPopup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [email, setEmail] = useState(""); // Default email
+  const [email, setEmail] = useState("");
   const [adminInfo, setAdminInfo] = useState({
     username: "",
     ID: "",
     password: "",
     email: "",
   });
-  const [notification, setNotification] = useState(""); // Added state for notification
-  const [error, setError] = useState(""); // Added state for error
+  const [notification, setNotification] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchAdminInfo = async () => {
@@ -79,7 +79,7 @@ const AdminInfoPopup = () => {
         }
       );
 
-      console.log("Update Response:", response.data); // Debugging
+      console.log("Update Response:", response.data);
 
       setNotification(`Email updated to: ${email}`);
     } catch (error) {
@@ -89,7 +89,7 @@ const AdminInfoPopup = () => {
           errorMessage = error.response.data.message || errorMessage;
         }
       } else {
-        // Non-Axios error
+      
         console.error("Error:", error);
       }
 
@@ -100,31 +100,31 @@ const AdminInfoPopup = () => {
   const handleEmailChange = (e: {
     target: { value: React.SetStateAction<string> };
   }) => {
-    setEmail(e.target.value); // Update email state
+    setEmail(e.target.value);
   };
 
   const handleCloseModal = () => {
-    setNotification(""); // Clear notification
-    setIsModalOpen(false); // Close the modal
+    setNotification(""); 
+    setIsModalOpen(false); 
   };
 
   return (
     <div className="relative">
-      {/* User Icon */}
+     
       <div className="flex items-center">
         <img
           src="/images/user-icon.png"
           alt="User"
           className="h-20 w-20 rounded-full m-2 cursor-pointer hover:opacity-80"
-          onClick={() => setIsModalOpen(true)} // Open modal on click
+          onClick={() => setIsModalOpen(true)} 
         />
       </div>
 
-      {/* Modal */}
+     
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="bg-white p-8 rounded-lg w-1/2 md:w-1/3 max-h-[80vh] overflow-y-auto shadow-lg transform scale-105">
-            {/* Notification */}
+            {/* Notification added */}
             {notification && (
               <Notification
                 message={notification}
@@ -136,7 +136,7 @@ const AdminInfoPopup = () => {
                 Admin Information
               </h2>
               <button
-                onClick={handleCloseModal} // Call the modal close handler
+                onClick={handleCloseModal} 
                 className="text-red-600 font-bold text-2xl cursor-pointer"
               >
                 <FontAwesomeIcon icon={faTimes} />

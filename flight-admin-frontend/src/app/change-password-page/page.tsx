@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
-import Notification from "../components/notification"; // Import the Notification component
+import Notification from "../components/notification"; 
 
 export default function ChangePasswordPage() {
   const searchParams = useSearchParams();
@@ -13,7 +13,7 @@ export default function ChangePasswordPage() {
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState(""); // Added state for notification
+  const [notification, setNotification] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined" && token) {
@@ -62,7 +62,7 @@ export default function ChangePasswordPage() {
 
   return (
     <div className="flex h-screen">
-      {/* Left side: Plane Image */}
+      {/* Left side part */}
       <div className="w-1/2 h-full">
         <img
           src="/images/plane_image_login_page.jpg"
@@ -71,7 +71,7 @@ export default function ChangePasswordPage() {
         />
       </div>
 
-      {/* Right side: Reset Password Form */}
+      {/* Right side part */}
       <div className="w-1/2 flex flex-col justify-center items-center bg-white opacity-95">
         <div className="text-5xl absolute top-4 right-8 flex gap-4 p-4">
           <img
@@ -112,7 +112,7 @@ export default function ChangePasswordPage() {
         </div>
       </div>
 
-      {/* Notification */}
+      {/* Notification added */}
       {notification && (
         <Notification
           message={notification}
